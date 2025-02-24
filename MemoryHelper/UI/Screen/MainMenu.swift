@@ -8,13 +8,15 @@
 import SwiftUI
 
 struct MainMenu: View {
+    @Binding var viewModel: WordViewModel
     
-    private let buttons: [ButtonMenuConfiguration] = [
-        ButtonMenuConfiguration(id: 1, title: "Все слова", image: "📖"),
-        ButtonMenuConfiguration(id: 2, title: "Тест", image: "🎯")
-    ]
     
     var body: some View {
+        let buttons: [ButtonMenuConfiguration] = [
+            ButtonMenuConfiguration(id: 1, title: "Все слова", image: "📖", destination: AnyView(AllWordsFlow(viewModel: $viewModel))),
+            ButtonMenuConfiguration(id: 2, title: "Тест", image: "🎯", destination: AnyView(EmptyView()))
+        ]
+
         VStack(spacing: 0) {
             TitleMenu()
             Spacer()
@@ -71,15 +73,13 @@ private struct ButtonMenuView: View {
     
     var body: some View {
         HStack(alignment: .center,spacing: 0) {
-            Button {
-                
-            } label: {
+            NavigationLink(destination: button.destination, label: {
                 HStack {
                     Text(button.image)
                     Text(button.title)
                 }
                 .frame(width: 280, height: 40)
-            }
+            }) 
             .foregroundStyle(.black)
             .font(.custom("Arial", size: 22))
             .padding(.vertical, 15)
@@ -94,8 +94,5 @@ private struct ButtonMenuConfiguration: Identifiable {
     let id: Int
     let title: String
     let image: String
-}
-
-#Preview {
-    MainMenu()
+    let destination: AnyView
 }

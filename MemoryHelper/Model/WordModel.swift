@@ -6,14 +6,19 @@
 //
 
 import Foundation
+import SwiftData
 
 enum Language: String, Codable {
     case english, italian, french
 }
 
-struct Word: Identifiable, Codable {
-    let id: Int
-    let original: String
-    let translation: String
-    let language: Language
+@Model
+class Word {
+    @Attribute(.unique) var original: String
+    var translation: String
+    
+    init(original: String, translation: String) {
+        self.original = original
+        self.translation = translation
+    }
 }
