@@ -15,8 +15,10 @@ enum NetworkError: Error {
 final class Networking {
     private let baseURL: URL? = URL(string: "https://translate.api.cloud.yandex.net/translate/v2/translate")
     private let apiKey = "AQVN0pISHwA4WHj0aWMZ6VZFtFhGVWhWHxrq05mh"
+    private let detectCodeURL: URL? = URL(string: "https://translate.api.cloud.yandex.net/translate/v2/detect")
+    private let idFolder = "b1g6d27r279k56i0vs93"
     
-    func translateWordWithAPI(_ word: String) async throws -> String {
+    func translateWordWithAPI(_ word: String,_ sourceLanguaggeCode: String, _ targetLanguageCode: String) async throws -> String {
         
         guard let url = baseURL else {
             throw NetworkError.badURL
@@ -27,9 +29,10 @@ final class Networking {
         request.setValue("Api-Key \(apiKey)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
+        
         let httpBody: [String : Any] = [
-            "sourceLanguageCode": "ru",
-            "targetLanguageCode": "en",
+            "sourceLanguageCode": sourceLanguaggeCode ,
+            "targetLanguageCode": targetLanguageCode,
             "texts": ["\(word)"]
         ]
         
@@ -43,15 +46,48 @@ final class Networking {
         
         
         let decodedResponse = try JSONDecoder().decode(TranslationResponse.self, from: data)
-        return decodedResponse.translation.first?.text ?? "Ошибка"
+        return decodedResponse.translations.first?.text ?? "Ошибка"
+    }
+    
+    func findLanguageCode(_ word: String) async throws -> String {
+        guard let url = detectCodeURL else {
+            throw NetworkError.badURL
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("Api-Key \(apiKey)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        let httpBody: [String : Any] = [
+            "folderId": "\(idFolder)",
+            "languageCodeHints":["ru", "en"],
+            "text": "\(word)"
+        ]
+        
+        request.httpBody = try JSONSerialization.data(withJSONObject: httpBody)
+        
+        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+            throw NetworkError.badRequest
+        }
+        
+        let decodeResponse = try JSONDecoder().decode(DetectedCode.self, from: data)
+        return decodeResponse.languageCode
     }
 }
 
 //MARK: TranslationDTO
 struct TranslationResponse: Codable {
-    var translation: [Translation]
+    var translations: [Translations]
     
-    struct Translation: Codable {
+    struct Translations: Codable {
         let text: String
     }
+}
+
+//MARK: DetectedCodeDTO
+struct DetectedCode: Codable {
+    var languageCode: String
 }

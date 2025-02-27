@@ -11,6 +11,7 @@ import SwiftData
 @Observable
 final class WordViewModel {
     private var modelContext: ModelContext
+    private var networking = Networking()
     
     var words: [Word] = []
     var newWord: String = ""
@@ -66,7 +67,39 @@ final class WordViewModel {
     
     
     func addNewWord(_ word: String) {
-        words.append(Word(original: word, translation: "Translate"))
+        
+        
+        guard word != "" else {
+            isAddingNewWord = false
+            return
+        }
+        
+        words.append(Word(original: "\(word)", translation: "Переводим..."))
+        
+        Task {
+            do {
+                let detectionCode = try await networking.findLanguageCode(word)
+                let isRussian = detectionCode == "ru"
+                
+                let translate = try await networking.translateWordWithAPI(
+                    word,
+                    isRussian ? "ru" : "en",
+                    isRussian ? "en" : "ru"
+                )
+                
+                let newWord = Word(
+                    original: isRussian ? word : translate,
+                    translation: isRussian ? translate : word
+                )
+                
+                if let index = words.firstIndex(where: { $0.translation == "Переводим..." }) {
+                    words[index] = newWord
+                }
+            } catch {
+                print("Error \(error)")
+            }
+        }
+        
         newWord = ""
         isAddingNewWord = false
     }

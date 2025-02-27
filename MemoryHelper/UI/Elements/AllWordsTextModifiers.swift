@@ -14,7 +14,8 @@ struct AllWordsViewModifier: ViewModifier {
         content
             .font(.custom("Arial", size: 22))
             .lineLimit(1)
-            .fixedSize(horizontal: false, vertical: true)
+            .layoutPriority(1)
+            .fixedSize(horizontal: true, vertical: true)
             .padding()
             .background(Color.gray.opacity(0.2))
             .clipShape(Capsule())

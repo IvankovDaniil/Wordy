@@ -17,7 +17,6 @@ private struct AllWordsListView: View {
         GeometryReader { geometry in
             let screenWidthSize = geometry.size.width
             let rows = viewModel.arrangeWordsIntoRow(maxWidth: screenWidthSize - 5)
-            // let lastWord = rows.last?.last
             ScrollView() {
                 VStack(alignment: .leading, spacing: 10) {
                     ForEach(rows, id: \.self) { row in
@@ -28,6 +27,12 @@ private struct AllWordsListView: View {
                                         withAnimation {
                                             expandedWordId = (expandedWordId == word.original) ? nil : word.original
                                         }
+                                    }
+                                    .contextMenu {
+                                        AllWordsContextMenuView()
+                                            .overlay {
+                                                Rectangle().stroke()
+                                            }
                                     }
                             }
                         }
@@ -61,6 +66,7 @@ private struct AddButton: View {
         if viewModel.wordsViewodel.isAddingNewWord == true {
             TextField("Добавить слово", text: $viewModel.wordsViewodel.newWord)
             .onSubmit {
+                
                 viewModel.wordsViewodel.addNewWord(viewModel.wordsViewodel.newWord)
             }
             .customWordView()
@@ -74,5 +80,27 @@ private struct AddButton: View {
             }
         }
         
+    }
+}
+
+private struct AllWordsContextMenuView: View {
+    
+    
+    var body: some View {
+        VStack(spacing: 0) {
+            Button {
+                //
+            } label: {
+                Text("Редактировать")
+                Image(systemName: "pencil")
+            }
+            
+            Button(role: .destructive) {
+                //
+            } label: {
+                Text("Удалить")
+                Image(systemName: "trash.fill")
+            }
+        }
     }
 }
