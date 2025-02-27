@@ -7,19 +7,19 @@
 
 import SwiftUI
 
+
 struct AllWordsFlow: View {
-    @Binding var viewModel: WordViewModel
+    @Bindable var viewModel: WordViewModel
     
     var body: some View {
-        ScrollView {
-            AllWordsView(viewModel: $viewModel)
-        }
-        .background {
-            Image(.bg)
-                .resizable(resizingMode: .tile)
-                .opacity(0.2)
-                .ignoresSafeArea()
-        }
+        AllWordsView(viewModel: viewModel)
+            .background {
+                Image(.bg)
+                    .resizable(resizingMode: .tile)
+                    .opacity(0.2)
+                    .ignoresSafeArea()
+            }
         
     }
 }
+

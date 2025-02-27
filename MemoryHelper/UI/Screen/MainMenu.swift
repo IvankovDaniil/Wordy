@@ -8,12 +8,12 @@
 import SwiftUI
 
 struct MainMenu: View {
-    @Binding var viewModel: WordViewModel
+    @Bindable var viewModel: WordViewModel
     
     
     var body: some View {
         let buttons: [ButtonMenuConfiguration] = [
-            ButtonMenuConfiguration(id: 1, title: "Все слова", image: "📖", destination: AnyView(AllWordsFlow(viewModel: $viewModel))),
+            ButtonMenuConfiguration(id: 1, title: "Все слова", image: "📖", destination: AnyView(AllWordsFlow(viewModel: viewModel))),
             ButtonMenuConfiguration(id: 2, title: "Тест", image: "🎯", destination: AnyView(EmptyView()))
         ]
 

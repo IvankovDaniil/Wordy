@@ -14,13 +14,14 @@ final class WordViewModel {
     
     var words: [Word] = []
     var newWord: String = ""
+    var isAddingNewWord = false
 
     init(modelContext: ModelContext) {
         self.modelContext = modelContext
         fetchWords()
     }
     
-    //Загрузка первыйх слов для английского языка
+    //Загрузка первых слов для английского языка
     func preloadWords() {
         let defaultWords = [
             Word(original: "Семья", translation: "Family"),
@@ -32,7 +33,9 @@ final class WordViewModel {
             Word(original: "Конечно", translation: "Of course"),
             Word(original: "Удачи", translation: "Good luck"),
             Word(original: "Время", translation: "Time"),
-            Word(original: "Дом", translation: "Home")
+            Word(original: "Дом", translation: "Home"),
+            Word(original: "Холодильник", translation: "Fridge"),
+            Word(original: "Маркетолог", translation: "Marketolog"),
         ]
         
         for word in defaultWords {
@@ -61,5 +64,11 @@ final class WordViewModel {
         }
     }
     
+    
+    func addNewWord(_ word: String) {
+        words.append(Word(original: word, translation: "Translate"))
+        newWord = ""
+        isAddingNewWord = false
+    }
 
 }

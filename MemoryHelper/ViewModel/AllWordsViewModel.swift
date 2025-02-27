@@ -7,9 +7,19 @@
 
 import Foundation
 import UIKit
+import SwiftUI
 
-
+@Observable
 final class AllWordsViewModel {
+    var wordsViewodel: WordViewModel
+    
+    init(wordsViewodel: WordViewModel) {
+        self.wordsViewodel = wordsViewodel
+    }
+    
+    var words: [Word] {
+        wordsViewodel.words
+    }
     
     //Расчет максимальной длины слова
     func maxWordWidth(_ word: Word) -> CGFloat {
@@ -21,8 +31,8 @@ final class AllWordsViewModel {
         return max(translationWidth, originalWidth)
     }
     
-    
-    func arrangeWordsIntoRow(_ words: [Word], maxWidth: CGFloat) -> [[Word]] {
+    //Расчет сколько слов поместятся в одну строку
+    func arrangeWordsIntoRow(maxWidth: CGFloat) -> [[Word]] {
         var rows: [[Word]] = []
         var currentRows = [Word]()
         var currentWidth: CGFloat = 0
@@ -48,27 +58,3 @@ final class AllWordsViewModel {
         return rows
     }
 }
-
-
-//var rows: [[Word]] = []
-//var currentRow: [Word] = []
-//var currentWidth: CGFloat = 0
-//
-//for word in words {
-//    let wordWidth = word.maxWidth() + 20  // Максимальная ширина + padding
-//    
-//    if currentWidth + wordWidth + 10 > maxWidth {
-//        rows.append(currentRow)
-//        currentRow = []
-//        currentWidth = 0
-//    }
-//    
-//    currentRow.append(word)
-//    currentWidth += wordWidth + 10
-//}
-//
-//if !currentRow.isEmpty {
-//    rows.append(currentRow)
-//}
-//
-//return rows

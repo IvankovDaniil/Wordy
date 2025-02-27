@@ -18,7 +18,7 @@ struct MainFlow: View {
     
     var body: some View {
         NavigationStack {
-            MainMenu(viewModel: $viewModel)
+            MainMenu(viewModel: viewModel)
         }
     }
 }
