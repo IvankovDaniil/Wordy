@@ -11,7 +11,6 @@ struct AllWordsView: View {
 
 private struct AllWordsListView: View {
     @Bindable var viewModel: AllWordsViewModel
-    @State var expandedWordId: String? = nil
     
     var body: some View {
         GeometryReader { geometry in
@@ -22,12 +21,7 @@ private struct AllWordsListView: View {
                     ForEach(rows, id: \.self) { row in
                         HStack(spacing: 10) {
                             ForEach(row) { word in
-                                WordView(word: word, showTranslation: expandedWordId == word.original)
-                                    .onTapGesture {
-                                        withAnimation {
-                                            expandedWordId = (expandedWordId == word.original) ? nil : word.original
-                                        }
-                                    }
+                                WordView(word: word)
                                     .contextMenu {
                                         AllWordsContextMenuView()
                                             .overlay {
@@ -49,12 +43,17 @@ private struct AllWordsListView: View {
 
 private struct WordView: View {
     let word: Word
-    var showTranslation = false
+    @State var showTranslation = false
     
     var body: some View {
         VStack(spacing: 10) {
             Text(showTranslation ? word.translation : word.original)
                 .customWordView()
+                .onTapGesture {
+                    withAnimation {
+                        showTranslation.toggle()
+                    }
+                }
         }
     }
 }
