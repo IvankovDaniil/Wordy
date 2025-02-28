@@ -8,14 +8,19 @@
 import Foundation
 import SwiftData
 
+protocol WordsManaging: AnyObject {
+    var words: [Word] { get }
+    func addWord(_ word: Word)
+    func deleteWord(_ word: Word)
+    func updateWord(at index: Int, with word: Word)
+}
+
 @Observable
-final class WordViewModel {
-    private var modelContext: ModelContext
-    private var networking = Networking()
+final class WordViewModel: WordsManaging {
     
-    var words: [Word] = []
-    var newWord: String = ""
-    var isAddingNewWord = false
+    private var modelContext: ModelContext
+
+    private(set) var words: [Word] = []
 
     init(modelContext: ModelContext) {
         self.modelContext = modelContext
@@ -64,50 +69,22 @@ final class WordViewModel {
             UserDefaults.standard.set(true, forKey: "preloadWords")
         }
     }
-    
-    //Добавление нового слова
-    func addNewWord(_ word: String) {
-        
-        guard word != "" else {
-            isAddingNewWord = false
-            return
-        }
-        
-        words.append(Word(original: "\(word)", translation: "Переводим..."))
-        
-        Task {
-            do {
-                let detectionCode = try await networking.findLanguageCode(word)
-                let isRussian = detectionCode == "ru"
-                
-                let translate = try await networking.translateWordWithAPI(
-                    word,
-                    isRussian ? "ru" : "en",
-                    isRussian ? "en" : "ru"
-                )
-                
-                let newWord = Word(
-                    original: isRussian ? word : translate,
-                    translation: isRussian ? translate : word
-                )
-                
-                if let index = words.firstIndex(where: { $0.translation == "Переводим..." }) {
-                    words[index] = newWord
-                }
-            } catch {
-                print("Error \(error)")
-            }
-        }
-        
-        newWord = ""
-        isAddingNewWord = false
+
+    func addWord(_ word: Word) {
+        words.append(word)
     }
     
-    //Удаление слова
     func deleteWord(_ word: Word) {
-        if let index = words.firstIndex(where: { $0.translation == word.translation }) {
+        if let index = words.firstIndex(where: { $0.original == word.original && $0.translation == word.translation }) {
             words.remove(at: index)
         }
     }
-
+    
+    func updateWord(at index: Int, with word: Word) {
+        guard words.indices.contains(index) else {
+            return
+        }
+        
+        words[index] = word
+    }
 }

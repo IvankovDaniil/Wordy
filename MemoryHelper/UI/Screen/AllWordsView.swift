@@ -41,9 +41,10 @@ private struct AllWordsListView: View {
                 Button {
                     isEditing.toggle()
                 } label: {
-                    Image(systemName: "pencil")
+                    withAnimation {
+                        Image(systemName: isEditing ? "pencil" : "checkmark" )
+                    }
                 }
-
             }
         }
         .onLongPressGesture {
@@ -65,31 +66,11 @@ private struct WordView: View {
     var body: some View {
         ZStack(alignment: .topLeading) {
             if isEdit {
-                Button(role: .destructive) {
-                    isShowConfirmedDialog = true
-                } label: {
-                    Image(systemName: "xmark.circle.fill")
-                        .resizable()
-                        .background(Circle().fill(.white))
-                        .frame(width: 20, height: 20)
-                        .shadow(radius: 6, x: 10, y: 10)
+                DeleteButton(word: word) {
+                    viewModel.deleteWord(word)
                 }
-                .zIndex(1)
-                .confirmationDialog(
-                    "Вы уверены, что хотите удалить \(word.original) - \(word.translation)",
-                    isPresented: $isShowConfirmedDialog,
-                    titleVisibility: .visible)
-                {
-                    Button("Да", role: .destructive) {
-                        withAnimation {
-                            viewModel.wordsViewodel.deleteWord(word)
-                        }
-                    }
-                    Button("Нет", role: .cancel) {  }
-                }
-
             }
-            
+      
             Text(showTranslation ? word.translation : word.original)
                 .customWordView()
                 .onTapGesture {
@@ -109,21 +90,52 @@ private struct WordView: View {
     }
 }
 
+private struct DeleteButton: View {
+    let word: Word
+    let onDelete: () -> Void
+    @State private var isShowConfirmedDialog = false
+    
+    var body: some View {
+        Button(role: .destructive) {
+            isShowConfirmedDialog = true
+        } label: {
+            Image(systemName: "xmark.circle.fill")
+                .resizable()
+                .background(Circle().fill(.white))
+                .frame(width: 20, height: 20)
+                .shadow(radius: 6, x: 10, y: 10)
+        }
+        .zIndex(1)
+        .confirmationDialog(
+            "Вы уверены, что хотите удалить \(word.original) - \(word.translation)",
+            isPresented: $isShowConfirmedDialog,
+            titleVisibility: .visible)
+        {
+            Button("Да", role: .destructive) {
+                withAnimation {
+                    onDelete()
+                }
+            }
+            Button("Нет", role: .cancel) {  }
+        }
+    }
+}
+
 private struct AddButton: View {
     @Bindable var viewModel: AllWordsViewModel
     
     var body: some View {
-        if viewModel.wordsViewodel.isAddingNewWord == true {
-            TextField("Добавить слово", text: $viewModel.wordsViewodel.newWord)
+        if viewModel.isAddingNewWord == true {
+            TextField("Добавить слово", text: $viewModel.newWord)
             .onSubmit {
                 
-                viewModel.wordsViewodel.addNewWord(viewModel.wordsViewodel.newWord)
+                viewModel.addNewWord(viewModel.newWord)
             }
             .customWordView()
             .padding(.trailing, 10)
         } else {
             Button(action: {
-                viewModel.wordsViewodel.isAddingNewWord = true
+                viewModel.isAddingNewWord = true
             }) {
                 Text("+ Добавить слово")
                     .customWordView()

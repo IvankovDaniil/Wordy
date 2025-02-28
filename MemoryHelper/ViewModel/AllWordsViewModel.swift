@@ -11,7 +11,10 @@ import SwiftUI
 
 @Observable
 final class AllWordsViewModel {
-    var wordsViewodel: WordViewModel
+    var wordsViewodel: WordsManaging
+    private var networking = Networking()
+    var newWord: String = ""
+    var isAddingNewWord = false
     
     init(wordsViewodel: WordViewModel) {
         self.wordsViewodel = wordsViewodel
@@ -56,5 +59,54 @@ final class AllWordsViewModel {
         }
         
         return rows
+    }
+    
+    //Добавление нового слова
+    func addNewWord(_ word: String) {
+        
+        guard word != "" else {
+            isAddingNewWord = false
+            return
+        }
+        
+        guard !words.contains(where: { $0.original == word }) else {
+            isAddingNewWord = false
+            return
+        }
+        
+        let placeholder = Word(original: "\(word)", translation: "Переводим...")
+        wordsViewodel.addWord(placeholder)
+        
+        Task {
+            do {
+                let detectionCode = try await networking.findLanguageCode(word)
+                let isRussian = detectionCode == "ru"
+                
+                let translate = try await networking.translateWordWithAPI(
+                    word,
+                    isRussian ? "ru" : "en",
+                    isRussian ? "en" : "ru"
+                )
+                
+                let newWord = Word(
+                    original: isRussian ? word : translate,
+                    translation: isRussian ? translate : word
+                )
+                
+                if let index = words.firstIndex(where: { $0.translation == "Переводим..." }) {
+                    wordsViewodel.updateWord(at: index, with: newWord)
+                }
+            } catch {
+                print("Error \(error)")
+            }
+        }
+        
+        newWord = ""
+        isAddingNewWord = false
+    }
+    
+    //Удаление слова
+    func deleteWord(_ word: Word) {
+        wordsViewodel.deleteWord(word)
     }
 }
