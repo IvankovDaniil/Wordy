@@ -11,6 +11,7 @@ struct AllWordsView: View {
 
 private struct AllWordsListView: View {
     @Bindable var viewModel: AllWordsViewModel
+    @State var isEditing = false
     
     var body: some View {
         GeometryReader { geometry in
@@ -21,32 +22,74 @@ private struct AllWordsListView: View {
                     ForEach(rows, id: \.self) { row in
                         HStack(spacing: 10) {
                             ForEach(row) { word in
-                                WordView(word: word)
-                                    .contextMenu {
-                                        AllWordsContextMenuView()
-                                            .overlay {
-                                                Rectangle().stroke()
-                                            }
-                                    }
+                                WordView(viewModel: viewModel, word: word, isEdit: isEditing)
                             }
                         }
                     }
-                    AddButton(viewModel: viewModel)
-                }
+                    withAnimation {
+                        AddButton(viewModel: viewModel)
+                            .opacity(isEditing ? 0 : 1)
+                            .disabled(isEditing)
+                    }
+              }
                 .padding(.leading, 10)
             }
             .scrollIndicators(.hidden)
+        }
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    isEditing.toggle()
+                } label: {
+                    Image(systemName: "pencil")
+                }
+
+            }
+        }
+        .onLongPressGesture {
+            isEditing.toggle()
         }
 
     }
 }
 
 private struct WordView: View {
+    @Bindable var viewModel: AllWordsViewModel
     let word: Word
     @State var showTranslation = false
     
+    @State private var isShowConfirmedDialog = false
+    
+    let isEdit: Bool
+    
     var body: some View {
-        VStack(spacing: 10) {
+        ZStack(alignment: .topLeading) {
+            if isEdit {
+                Button(role: .destructive) {
+                    isShowConfirmedDialog = true
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .resizable()
+                        .background(Circle().fill(.white))
+                        .frame(width: 20, height: 20)
+                        .shadow(radius: 6, x: 10, y: 10)
+                }
+                .zIndex(1)
+                .confirmationDialog(
+                    "Вы уверены, что хотите удалить \(word.original) - \(word.translation)",
+                    isPresented: $isShowConfirmedDialog,
+                    titleVisibility: .visible)
+                {
+                    Button("Да", role: .destructive) {
+                        withAnimation {
+                            viewModel.wordsViewodel.deleteWord(word)
+                        }
+                    }
+                    Button("Нет", role: .cancel) {  }
+                }
+
+            }
+            
             Text(showTranslation ? word.translation : word.original)
                 .customWordView()
                 .onTapGesture {
@@ -54,6 +97,14 @@ private struct WordView: View {
                         showTranslation.toggle()
                     }
                 }
+                .rotationEffect(.degrees(isEdit ? 3 : 0))
+                .animation(
+                    isEdit
+                        ? .easeInOut(duration: 0.1).repeatForever(autoreverses: true)
+                        : .default,
+                    value: isEdit
+                )
+                .disabled(isEdit)
         }
     }
 }
@@ -79,27 +130,5 @@ private struct AddButton: View {
             }
         }
         
-    }
-}
-
-private struct AllWordsContextMenuView: View {
-    
-    
-    var body: some View {
-        VStack(spacing: 0) {
-            Button {
-                //
-            } label: {
-                Text("Редактировать")
-                Image(systemName: "pencil")
-            }
-            
-            Button(role: .destructive) {
-                //
-            } label: {
-                Text("Удалить")
-                Image(systemName: "trash.fill")
-            }
-        }
     }
 }

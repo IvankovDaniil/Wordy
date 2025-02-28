@@ -65,9 +65,8 @@ final class WordViewModel {
         }
     }
     
-    
+    //Добавление нового слова
     func addNewWord(_ word: String) {
-        
         
         guard word != "" else {
             isAddingNewWord = false
@@ -102,6 +101,13 @@ final class WordViewModel {
         
         newWord = ""
         isAddingNewWord = false
+    }
+    
+    //Удаление слова
+    func deleteWord(_ word: Word) {
+        if let index = words.firstIndex(where: { $0.translation == word.translation }) {
+            words.remove(at: index)
+        }
     }
 
 }
