@@ -87,4 +87,9 @@ final class WordViewModel: WordsManaging {
         
         words[index] = word
     }
+    
+    func conditionForLockMenu() -> LockUnlockMenu {
+        words.count > 4 ? .unlock : .lock
+    }
+    
 }
