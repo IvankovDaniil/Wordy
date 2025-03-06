@@ -12,6 +12,7 @@ struct AllWordsView: View {
 private struct AllWordsListView: View {
     @Bindable var viewModel: AllWordsViewModel
     @State var isEditing = false
+    @FocusState private var isFocused: Bool
     
     var body: some View {
         GeometryReader { geometry in
@@ -27,7 +28,7 @@ private struct AllWordsListView: View {
                         }
                     }
                     withAnimation {
-                        AddButton(viewModel: viewModel)
+                        AddButton(viewModel: viewModel, isFocused: _isFocused)
                             .opacity(isEditing ? 0 : 1)
                             .disabled(isEditing)
                     }
@@ -42,10 +43,13 @@ private struct AllWordsListView: View {
                     isEditing.toggle()
                 } label: {
                     withAnimation {
-                        Image(systemName: isEditing ? "pencil" : "checkmark" )
+                        Image(systemName: isEditing ? "checkmark" : "pencil" )
                     }
                 }
             }
+        }
+        .onTapGesture {
+            isFocused = false
         }
         .onLongPressGesture {
             isEditing.toggle()
@@ -123,19 +127,21 @@ private struct DeleteButton: View {
 
 private struct AddButton: View {
     @Bindable var viewModel: AllWordsViewModel
+    @State var editing: Bool = false
+    @FocusState var isFocused: Bool
     
     var body: some View {
         if viewModel.isAddingNewWord == true {
-            TextField("Добавить слово", text: $viewModel.newWord)
+            DesignTextField(text: $viewModel.newWord, editing: $editing)
             .onSubmit {
-                
                 viewModel.addNewWord(viewModel.newWord)
             }
-            .customWordView()
             .padding(.trailing, 10)
+            .focused($isFocused)
         } else {
             Button(action: {
                 viewModel.isAddingNewWord = true
+                isFocused = true
             }) {
                 Text("+ Добавить слово")
                     .customWordView()
