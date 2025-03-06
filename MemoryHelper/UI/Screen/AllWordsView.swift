@@ -1,7 +1,6 @@
 import SwiftUI
 
 struct AllWordsView: View {
-    @Environment(\.modelContext) var modelContext
     @Bindable var viewModel: WordViewModel
 
     var body: some View {

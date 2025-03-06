@@ -18,7 +18,7 @@ struct MainMenu: View {
     var body: some View {
         let buttons: [ButtonMenuConfiguration] = [
             ButtonMenuConfiguration(id: 1, title: "Все слова", image: "📖", destination: AnyView(AllWordsFlow(viewModel: viewModel)), isLocked: .unlock),
-            ButtonMenuConfiguration(id: 2, title: "Тест", image: "🎯", destination: AnyView(EmptyView()), isLocked: viewModel.conditionForLockMenu())
+            ButtonMenuConfiguration(id: 2, title: "Тест", image: "🎯", destination: AnyView(TestFlow(viewModel: viewModel)), isLocked: viewModel.conditionForLockMenu())
         ]
         
         VStack(spacing: 0) {
