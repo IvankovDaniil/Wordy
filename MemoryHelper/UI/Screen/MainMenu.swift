@@ -12,19 +12,15 @@ enum LockUnlockMenu {
 }
 
 struct MainMenu: View {
+    @Binding var navigationPath: NavigationPath
     @Bindable var viewModel: WordViewModel
-    
-    
+    @Binding var testViewModel: TestViewModel?
+
     var body: some View {
-        let buttons: [ButtonMenuConfiguration] = [
-            ButtonMenuConfiguration(id: 1, title: "Все слова", image: "📖", destination: AnyView(AllWordsFlow(viewModel: viewModel)), isLocked: .unlock),
-            ButtonMenuConfiguration(id: 2, title: "Тест", image: "🎯", destination: AnyView(TestFlow(viewModel: viewModel)), isLocked: viewModel.conditionForLockMenu())
-        ]
-        
         VStack(spacing: 0) {
             TitleMenu()
             Spacer()
-            ButtonMenu(buttons: buttons)
+            ButtonMenu(viewModel: viewModel, navigationPath: $navigationPath, testViewModel: $testViewModel)
             Spacer()
         }
         .frame(maxWidth: .infinity ,maxHeight: .infinity)
@@ -33,6 +29,9 @@ struct MainMenu: View {
                 .opacity(0.1)
         }
         .ignoresSafeArea(edges: .bottom)
+        .onAppear {
+            print("MainMenu appeared")
+        }
     }
 }
 
@@ -60,12 +59,24 @@ private struct TitleMenu: View {
 }
 
 private struct ButtonMenu: View {
-    var buttons: [ButtonMenuConfiguration]
+    @Bindable var viewModel: WordViewModel
+    @Binding var navigationPath: NavigationPath
+    @Binding var testViewModel: TestViewModel?
     
     var body: some View {
+        let buttons: [ButtonMenuConfiguration] = [
+            ButtonMenuConfiguration(id: 1, title: "Все слова", image: "📖", isLocked: .unlock, destination: .allWords),
+            ButtonMenuConfiguration(id: 2, title: "Тест", image: "🎯", isLocked: viewModel.conditionForLockMenu(), destination: .test)
+        ]
+        
         VStack(spacing: 0) {
             ForEach(buttons) { button in
-                ButtonMenuView(button: button)
+                ButtonMenuView(
+                    viewModel: viewModel,
+                    navigationPath: $navigationPath,
+                    testViewModel: $testViewModel,
+                    button: button
+                )
                     .padding(.vertical, 15)
             }
         }
@@ -73,16 +84,26 @@ private struct ButtonMenu: View {
 }
 
 private struct ButtonMenuView: View {
+    @Bindable var viewModel: WordViewModel
+    @Binding var navigationPath: NavigationPath
+    @State private var showMessage = false
+    @Binding var testViewModel: TestViewModel?
+            
     let button: ButtonMenuConfiguration
     var isLock: Bool {
         button.isLocked == .lock
     }
-    @State private var showMessage = false
     
     var body: some View {
         HStack(alignment: .center, spacing: 0) {
             ZStack {
-                NavigationLink(destination: button.destination) {
+                Button {
+                    if button.destination == .test {
+                        testViewModel = TestViewModel(words: viewModel.words)
+                    } else {
+                        navigationPath.append(button.destination)
+                    }
+                } label: {
                     HStack {
                         Text(button.image)
                         Text(button.title)
@@ -91,6 +112,9 @@ private struct ButtonMenuView: View {
                     .frame(width: 280, height: 40)
                 }
                 .disabled(isLock)
+                .onAppear {
+                    print("Button for \(button.title) appeared")
+                }
                 
                 if isLock {
                     Image(systemName: "lock.circle")
@@ -108,6 +132,7 @@ private struct ButtonMenuView: View {
                     }
                 }
             })
+            
         }
         .foregroundStyle(.black)
         .font(.custom("Arial", size: 22))
@@ -120,6 +145,7 @@ private struct ButtonMenuView: View {
                 ShowMessageTextView(showMessage: showMessage)
             }
         }
+
     }
 }
 
@@ -143,6 +169,6 @@ private struct ButtonMenuConfiguration: Identifiable {
     let id: Int
     let title: String
     let image: String
-    let destination: AnyView
     let isLocked: LockUnlockMenu
+    let destination: Buttons
 }

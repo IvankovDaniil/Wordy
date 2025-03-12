@@ -12,8 +12,12 @@ enum TestType {
 }
 
 @Observable
-final class TestViewModel {
-    private let wordsViewModel: WordViewModel
+final class TestViewModel: Equatable {
+    static func == (lhs: TestViewModel, rhs: TestViewModel) -> Bool {
+        return lhs.currentIndex == rhs.currentIndex && lhs.currentWord == rhs.currentWord
+    }
+    
+    private var words: [Word]
     
     var testWord: [(word: Word, test: TestType)] = []
     var currentWord: Word?
@@ -22,13 +26,18 @@ final class TestViewModel {
     var isRightWord: Bool = false
     var isValid: Bool?
     
-    init(wordsViewModel: WordViewModel) {
-        self.wordsViewModel = wordsViewModel
+    deinit {
+        print("deinit")
+    }
+    
+    init(words: [Word]) {
+        self.words = words
         self.setup()
+        print("New TestViewModel created with \(words.count) words")
     }
     
     func setup() {
-        let shuffledWords = wordsViewModel.words.shuffled()
+        let shuffledWords = words.shuffled()
         let testCases: [TestType] = [.freeInput, .chooseRightTranslate, .listenAndType]
         
         for shuffledWord in shuffledWords {
@@ -40,22 +49,25 @@ final class TestViewModel {
     }
     
     func nextTest() {
-        guard currentIndex < testWord.count else { currentType = nil; return }
+        guard currentIndex < testWord.count - 1 else { currentType = nil; return }
         
         currentIndex += 1
         loadNextTest()
     }
     
     func loadNextTest() {
+        let newWord = testWord[currentIndex].word
+        print("Старое слово: \(currentWord?.original ?? "nil") -> Новое слово: \(newWord.original)")
+        
         currentType = testWord[currentIndex].test
-        currentWord = testWord[currentIndex].word
+        currentWord = newWord
     }
     
     func randomWords(rightWord: Word) -> [Word] {
         var options: Set<Word> = [rightWord]
 
          while options.count < 3 {
-             if let randomWord = wordsViewModel.words.randomElement(), randomWord != rightWord {
+             if let randomWord = words.randomElement(), randomWord != rightWord {
                  options.insert(randomWord)
              }
          }
@@ -69,10 +81,14 @@ final class TestViewModel {
         guard let currentWord = currentWord else {
             return
         }
+        let cleanedWord = word
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .filter { $0.isLetter}
+            .lowercased()
         
         isValid = true
         
-        if currentWord.translation.lowercased() == word.lowercased() {
+        if currentWord.translation.lowercased() == cleanedWord {
             isRightWord = true
             isValid = nil
         } else {

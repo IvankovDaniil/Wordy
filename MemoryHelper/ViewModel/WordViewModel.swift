@@ -17,7 +17,7 @@ protocol WordsManaging: AnyObject {
 
 @Observable
 final class WordViewModel: WordsManaging {
-    
+        
     private var modelContext: ModelContext
 
     private(set) var words: [Word] = []
@@ -30,18 +30,16 @@ final class WordViewModel: WordsManaging {
     //Загрузка первых слов для английского языка
     func preloadWords() {
         let defaultWords = [
-            Word(original: "Семья", translation: "Family"),
-            Word(original: "Любовь", translation: "Love"),
-            Word(original: "Мама", translation: "Mom"),
+            Word(original: "Семья1", translation: "Family"),
+            Word(original: "Любовь1", translation: "Love"),
+            Word(original: "Мама1", translation: "Mom"),
             Word(original: "Привет", translation: "Hello"),
-            Word(original: "Пока", translation: "Bye"),
-            Word(original: "Спасибо", translation: "Thank you"),
-            Word(original: "Конечно", translation: "Of course"),
-            Word(original: "Удачи", translation: "Good luck"),
-            Word(original: "Время", translation: "Time"),
-            Word(original: "Дом", translation: "Home"),
-            Word(original: "Холодильник", translation: "Fridge"),
-            Word(original: "Маркетолог", translation: "Marketolog"),
+            Word(original: "Пока1", translation: "Bye"),
+            Word(original: "Спасибо1", translation: "Thank you"),
+            Word(original: "Конечно1", translation: "Of course"),
+            Word(original: "Удачи1", translation: "Good luck"),
+            Word(original: "Время1", translation: "Time"),
+            Word(original: "Дом1", translation: "Home"),
         ]
         
         for word in defaultWords {

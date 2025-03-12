@@ -16,9 +16,16 @@ struct MemoryHelperApp: App {
         return try! ModelContainer(for: schema, configurations: config)
     }()
     
+    @State private var viewModel: WordViewModel
+    
+    init() {
+        let context = sharedModelContainer.mainContext
+        _viewModel = State(wrappedValue: WordViewModel(modelContext: context))
+    }
+    
     var body: some Scene {
         WindowGroup {
-            MainFlow(context: sharedModelContainer.mainContext)
+            MainFlow(viewModel: viewModel)
         }
         .modelContainer(sharedModelContainer)
     }

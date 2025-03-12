@@ -9,10 +9,20 @@ import SwiftUI
 
 struct TestFlow: View {
     @Bindable var viewModel: WordViewModel
+    @Binding var testViewModel: TestViewModel?
+     
+    init(viewModel: WordViewModel, testViewModel: Binding<TestViewModel?>) {
+        print("TestFlow init")
+        self.viewModel = viewModel
+        self._testViewModel = testViewModel
+    }
     
 
     var body: some View {
-        TestView(testViewModel: TestViewModel(wordsViewModel: viewModel))
+        TestView(testViewModel: $testViewModel)
+            .onAppear {
+                print("testFlow appear")
+            }
     }
 }
 

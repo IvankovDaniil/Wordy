@@ -7,10 +7,14 @@
 import SwiftUI
 
 struct NextTestButtonView: View {
-    let testViewModel: TestViewModel
+    let action: () -> Void
+    @Binding var selectedWord: Word?
+    @Binding var isRightWord: Bool
     
-    init(testViewModel: TestViewModel) {
-        self.testViewModel = testViewModel
+    init(selectedWord: Binding<Word?> = .constant(nil), isRightWord: Binding<Bool>, action: @escaping () -> Void) {
+        self._selectedWord = selectedWord
+        self._isRightWord = isRightWord
+        self.action = action
     }
     
     var body: some View {
@@ -22,8 +26,10 @@ struct NextTestButtonView: View {
             
             Button("Следующий") {
                 withAnimation {
-                    testViewModel.isRightWord = false
-                    testViewModel.nextTest()
+                    print("NextTestButton pressed")
+                    selectedWord = nil
+                    isRightWord = false
+                    action()
                 }
             }
             .font(.custom("Arial", size: 18))
