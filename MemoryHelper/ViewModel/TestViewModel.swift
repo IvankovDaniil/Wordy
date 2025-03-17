@@ -81,14 +81,26 @@ final class TestViewModel: Equatable {
         guard let currentWord = currentWord else {
             return
         }
+        
         let cleanedWord = word
             .trimmingCharacters(in: .whitespacesAndNewlines)
             .filter { $0.isLetter}
             .lowercased()
+            .folding(options: .diacriticInsensitive, locale: nil)
+        
+        let currentWordTranslation = currentWord.translation
+        
+        let currentWordCheck = currentWordTranslation
+            .trimmingCharacters(in: .whitespaces)
+            .filter { $0.isLetter }
+            .lowercased()
+            .folding(options: .diacriticInsensitive, locale: nil)
+        
+        print(cleanedWord, currentWord.translation)
         
         isValid = true
         
-        if currentWord.translation.lowercased() == cleanedWord {
+        if currentWordCheck == cleanedWord {
             isRightWord = true
             isValid = nil
         } else {

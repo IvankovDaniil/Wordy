@@ -29,7 +29,7 @@ struct MainFlow: View {
                     case .allWords:
                         AllWordsFlow(viewModel: viewModel)
                     case .test:
-                        if let testViewModel = testViewModel {
+                        if let _ = testViewModel {
                             TestFlow(viewModel: viewModel, testViewModel: $testViewModel)
                         } else {
                             Text("Error: TestViewModel not initialized")

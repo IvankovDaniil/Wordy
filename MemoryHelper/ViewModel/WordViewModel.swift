@@ -25,21 +25,36 @@ final class WordViewModel: WordsManaging {
     init(modelContext: ModelContext) {
         self.modelContext = modelContext
         fetchWords()
+        print(words[0].translation, words[1].translation,words[2].translation)
+    }
+    
+    
+    func resetWords() {
+        let descriptor = FetchDescriptor<Word>()
+        
+        if let storedWords = try? modelContext.fetch(descriptor) {
+            for word in storedWords {
+                modelContext.delete(word)
+            }
+            try? modelContext.save()
+        }
+        
+        UserDefaults.standard.set(false, forKey: "preloadWords")
     }
     
     //Загрузка первых слов для английского языка
     func preloadWords() {
         let defaultWords = [
-            Word(original: "Семья1", translation: "Family"),
-            Word(original: "Любовь1", translation: "Love"),
-            Word(original: "Мама1", translation: "Mom"),
+            Word(original: "Семья", translation: "Family"),
+            Word(original: "Любовь", translation: "Love"),
+            Word(original: "Мама", translation: "Mom"),
             Word(original: "Привет", translation: "Hello"),
-            Word(original: "Пока1", translation: "Bye"),
-            Word(original: "Спасибо1", translation: "Thank you"),
-            Word(original: "Конечно1", translation: "Of course"),
-            Word(original: "Удачи1", translation: "Good luck"),
-            Word(original: "Время1", translation: "Time"),
-            Word(original: "Дом1", translation: "Home"),
+            Word(original: "Пока", translation: "Bye"),
+            Word(original: "Спасибо", translation: "Thank you"),
+            Word(original: "Конечно", translation: "Of course"),
+            Word(original: "Удачи", translation: "Good luck"),
+            Word(original: "Время", translation: "Time"),
+            Word(original: "Дом", translation: "Home"),
         ]
         
         for word in defaultWords {

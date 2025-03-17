@@ -23,6 +23,7 @@ struct NextTestButtonView: View {
                 .font(.custom("Arial", size: 20))
                 .foregroundColor(.green)
                 .transition(.opacity)
+                .padding(.top, 10)
             
             Button("Следующий") {
                 withAnimation {

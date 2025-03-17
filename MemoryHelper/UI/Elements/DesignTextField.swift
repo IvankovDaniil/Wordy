@@ -53,7 +53,6 @@ struct DesignTextField: View {
             Text(isValid ?? true ? "" : "Ошибка")
                 .font(.custom("Arial", size: 10))
                 .foregroundStyle(isValid ?? true ? .gray : .red)
-                .padding(.leading, 10)
         }
         .onTapGesture {
             editing = true

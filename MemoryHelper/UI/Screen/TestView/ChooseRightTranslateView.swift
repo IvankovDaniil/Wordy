@@ -10,75 +10,66 @@ import SwiftUI
 struct ChooseRightTranslateView: View {
     @Bindable var testViewModel: TestViewModel
     let word: Word
-    private let randomBool = Bool.random()
+    @State private var randomBool = Bool.random()
     @State private var selectedWord: Word?
     @State var testWords: [Word] = []
     
     var body: some View {
-        VStack(spacing: 20) {
-            Spacer()
+        GeometryReader { geo in
             
-            Text("Выберите правильный перевод слова")
-                .font(.title2)
-                .fontWeight(.semibold)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal)
-            
-            Text(randomBool ? word.original : word.translation)
-                .font(.largeTitle)
-                .fontWeight(.bold)
-                .padding()
-                .frame(maxWidth: .infinity)
-                .background(Color.blue.opacity(0.2))
-                .cornerRadius(12)
-                .shadow(radius: 5)
-            
-            GeometryReader { geometry in
-                let buttonWidth = (geometry.size.width - 40) / CGFloat(testWords.count)
+            VStack(spacing: 20) {
                 
-                HStack(spacing: 10) {
-                    ForEach(testWords) { testWord in
-                        Button(action: {
-                            selectedWord = testWord
-                            if selectedWord == self.word {
-                                testViewModel.isRightWord = true
-                            } else {
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                                    selectedWord = nil
+                Text("Выберите правильный перевод слова")
+                    .ruleTextModifier()
+                
+                Text(randomBool ? word.original : word.translation)
+                    .wordTextModifier()
+                
+                GeometryReader { geometry in
+                    let buttonWidth = (geometry.size.width - 40) / CGFloat(testWords.count)
+                    
+                    HStack(spacing: 10) {
+                        ForEach(testWords) { testWord in
+                            Button(action: {
+                                selectedWord = testWord
+                                if selectedWord == self.word {
+                                    testViewModel.isRightWord = true
+                                } else {
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                                        selectedWord = nil
+                                    }
                                 }
+                            }) {
+                                Text(randomBool ? testWord.translation : testWord.original)
+                                    .font(.headline)
+                                    .frame(width: min(buttonWidth, 120), height: 50)
+                                    .background(
+                                        selectedWord == testWord
+                                        ? (testWord == word ? Color.green : Color.red)
+                                        : Color.gray.opacity(0.3)
+                                    )
+                                    .cornerRadius(10)
+                                    .shadow(radius: 5)
+                                    .foregroundColor(.white)
                             }
-                        }) {
-                            Text(randomBool ? testWord.translation : testWord.original)
-                                .font(.headline)
-                                .frame(width: min(buttonWidth, 120), height: 50)
-                                .background(
-                                    selectedWord == testWord
-                                    ? (testWord == word ? Color.green : Color.red)
-                                    : Color.gray.opacity(0.3)
-                                )
-                                .cornerRadius(10)
-                                .shadow(radius: 5)
-                                .foregroundColor(.white)
+                            .disabled(selectedWord != nil)
                         }
-                        .disabled(selectedWord != nil)
                     }
+                    .padding(.horizontal, 10)
                 }
-                .padding(.horizontal, 10)
+                .frame(height: 60)
+                
+                
+                NextTestButtonView(selectedWord: $selectedWord, isRightWord: $testViewModel.isRightWord, action: {
+                    testViewModel.nextTest()
+                })
+                .transition(.opacity)
+                .opacity(testViewModel.isRightWord ? 1 : 0)
             }
-            .frame(height: 60)
-            
-            Spacer()
-            
-            NextTestButtonView(selectedWord: $selectedWord, isRightWord: $testViewModel.isRightWord, action: {
-                testViewModel.nextTest()
-            })
-                    .transition(.opacity)
-                    .opacity(testViewModel.isRightWord ? 1 : 0)
-            
-            
-            Spacer()
+            .frame(height: 500)
+            .frame(maxHeight: .infinity)
         }
-        .navigationTitle("Выбери правильный")
+        .padding()
         .navigationBarTitleDisplayMode(.inline)
         .onAppear {
             self.testWords = self.testViewModel.randomWords(rightWord: word)

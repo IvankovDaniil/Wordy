@@ -19,10 +19,12 @@ struct TestFlow: View {
     
 
     var body: some View {
-        TestView(testViewModel: $testViewModel)
-            .onAppear {
-                print("testFlow appear")
-            }
+        VStack {
+            TestView(testViewModel: $testViewModel)
+                .onAppear {
+                    print("testFlow appear")
+                }
+        }
     }
 }
 
