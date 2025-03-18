@@ -7,20 +7,20 @@
 
 import SwiftUI
 
-struct MainMenu: View {
-    @Bindable var viewModel: WordViewModel
-    
-    
-    var body: some View {
-        let buttons: [ButtonMenuConfiguration] = [
-            ButtonMenuConfiguration(id: 1, title: "Все слова", image: "📖", destination: AnyView(AllWordsFlow(viewModel: viewModel))),
-            ButtonMenuConfiguration(id: 2, title: "Тест", image: "🎯", destination: AnyView(EmptyView()))
-        ]
+enum LockUnlockMenu {
+    case lock, unlock
+}
 
+struct MainMenu: View {
+    @Binding var navigationPath: NavigationPath
+    @Bindable var viewModel: WordViewModel
+    @Binding var testViewModel: TestViewModel?
+
+    var body: some View {
         VStack(spacing: 0) {
             TitleMenu()
             Spacer()
-            ButtonMenu(buttons: buttons)
+            ButtonMenu(viewModel: viewModel, navigationPath: $navigationPath, testViewModel: $testViewModel)
             Spacer()
         }
         .frame(maxWidth: .infinity ,maxHeight: .infinity)
@@ -29,6 +29,9 @@ struct MainMenu: View {
                 .opacity(0.1)
         }
         .ignoresSafeArea(edges: .bottom)
+        .onAppear {
+            print("MainMenu appeared")
+        }
     }
 }
 
@@ -50,18 +53,30 @@ private struct TitleMenu: View {
                     .foregroundStyle(.black)
                     .frame(width: 25, height: 25)
             }
-
+            
         }
     }
 }
 
 private struct ButtonMenu: View {
-    var buttons: [ButtonMenuConfiguration]
+    @Bindable var viewModel: WordViewModel
+    @Binding var navigationPath: NavigationPath
+    @Binding var testViewModel: TestViewModel?
     
     var body: some View {
+        let buttons: [ButtonMenuConfiguration] = [
+            ButtonMenuConfiguration(id: 1, title: "Все слова", image: "📖", isLocked: .unlock, destination: .allWords),
+            ButtonMenuConfiguration(id: 2, title: "Тест", image: "🎯", isLocked: viewModel.conditionForLockMenu(), destination: .test)
+        ]
+        
         VStack(spacing: 0) {
             ForEach(buttons) { button in
-                ButtonMenuView(button: button)
+                ButtonMenuView(
+                    viewModel: viewModel,
+                    navigationPath: $navigationPath,
+                    testViewModel: $testViewModel,
+                    button: button
+                )
                     .padding(.vertical, 15)
             }
         }
@@ -69,24 +84,84 @@ private struct ButtonMenu: View {
 }
 
 private struct ButtonMenuView: View {
+    @Bindable var viewModel: WordViewModel
+    @Binding var navigationPath: NavigationPath
+    @State private var showMessage = false
+    @Binding var testViewModel: TestViewModel?
+            
     let button: ButtonMenuConfiguration
+    var isLock: Bool {
+        button.isLocked == .lock
+    }
     
     var body: some View {
-        HStack(alignment: .center,spacing: 0) {
-            NavigationLink(destination: button.destination, label: {
-                HStack {
-                    Text(button.image)
-                    Text(button.title)
+        HStack(alignment: .center, spacing: 0) {
+            ZStack {
+                Button {
+                    if button.destination == .test {
+                        testViewModel = TestViewModel(words: viewModel.words)
+                    } else {
+                        navigationPath.append(button.destination)
+                    }
+                } label: {
+                    HStack {
+                        Text(button.image)
+                        Text(button.title)
+                    }
+                    .opacity(isLock ? 0.5 : 1)
+                    .frame(width: 280, height: 40)
                 }
-                .frame(width: 280, height: 40)
-            }) 
-            .foregroundStyle(.black)
-            .font(.custom("Arial", size: 22))
-            .padding(.vertical, 15)
-            .background(.white)
+                .disabled(isLock)
+                .onAppear {
+                    print("Button for \(button.title) appeared")
+                }
+                
+                if isLock {
+                    Image(systemName: "lock.circle")
+                        .resizable()
+                        .frame(width: 30, height: 30)
+                }
+            }
+            .simultaneousGesture(TapGesture().onEnded {
+                if isLock {
+                    showMessage = true
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                        withAnimation {
+                            showMessage = false
+                        }
+                    }
+                }
+            })
+            
         }
+        .foregroundStyle(.black)
+        .font(.custom("Arial", size: 22))
+        .padding(.vertical, 15)
+        .background(.white)
         .clipShape(.rect(cornerRadius: 15))
         .shadow(color: .gray, radius: 5, x: 5, y: 5)
+        .overlay {
+            if showMessage {
+                ShowMessageTextView(showMessage: showMessage)
+            }
+        }
+
+    }
+}
+
+private struct ShowMessageTextView: View {
+    let showMessage: Bool
+    
+    var body: some View {
+        Text("У вас в словаре должно быть как минимум 5 слов для открытия теста")
+            .foregroundColor(.white)
+            .fixedSize(horizontal: false, vertical: true)
+            .padding()
+            .background(Color.black.opacity(0.7))
+            .cornerRadius(10)
+            .offset(y: -50)
+            .opacity(showMessage ? 1 : 0)
+            .animation(.easeInOut(duration: 0.3), value: showMessage)
     }
 }
 
@@ -94,5 +169,6 @@ private struct ButtonMenuConfiguration: Identifiable {
     let id: Int
     let title: String
     let image: String
-    let destination: AnyView
+    let isLocked: LockUnlockMenu
+    let destination: Buttons
 }

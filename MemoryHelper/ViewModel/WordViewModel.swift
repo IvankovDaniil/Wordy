@@ -26,6 +26,21 @@ final class WordViewModel: WordsManaging {
     init(modelContext: ModelContext) {
         self.modelContext = modelContext
         fetchWords()
+        print(words[0].translation, words[1].translation,words[2].translation)
+    }
+    
+    
+    func resetWords() {
+        let descriptor = FetchDescriptor<Word>()
+        
+        if let storedWords = try? modelContext.fetch(descriptor) {
+            for word in storedWords {
+                modelContext.delete(word)
+            }
+            try? modelContext.save()
+        }
+        
+        UserDefaults.standard.set(false, forKey: "preloadWords")
     }
     
     //Загрузка первых слов для английского языка
@@ -87,4 +102,9 @@ final class WordViewModel: WordsManaging {
         
         words[index] = word
     }
+    
+    func conditionForLockMenu() -> LockUnlockMenu {
+        words.count > 4 ? .unlock : .lock
+    }
+    
 }
