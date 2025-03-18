@@ -11,12 +11,13 @@ import SwiftData
 protocol WordsManaging: AnyObject {
     var words: [Word] { get }
     func addWord(_ word: Word)
-    func deleteWord(_ word: Word)
+    func deleteWord(_ word: [Word])
     func updateWord(at index: Int, with word: Word)
 }
 
 @Observable
 final class WordViewModel: WordsManaging {
+    
     
     private var modelContext: ModelContext
 
@@ -41,7 +42,6 @@ final class WordViewModel: WordsManaging {
             Word(original: "Время", translation: "Time"),
             Word(original: "Дом", translation: "Home"),
             Word(original: "Холодильник", translation: "Fridge"),
-            Word(original: "Маркетолог", translation: "Marketolog"),
         ]
         
         for word in defaultWords {
@@ -74,9 +74,9 @@ final class WordViewModel: WordsManaging {
         words.append(word)
     }
     
-    func deleteWord(_ word: Word) {
-        if let index = words.firstIndex(where: { $0.original == word.original && $0.translation == word.translation }) {
-            words.remove(at: index)
+    func deleteWord(_ words: [Word]) {
+        self.words.removeAll { word in
+            words.contains(where: { $0.id == word.id })
         }
     }
     

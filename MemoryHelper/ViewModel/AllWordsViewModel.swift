@@ -16,6 +16,8 @@ final class AllWordsViewModel {
     var newWord: String = ""
     var isAddingNewWord = false
     
+    var selectedWords = [Word]()
+    
     init(wordsViewodel: WordViewModel) {
         self.wordsViewodel = wordsViewodel
     }
@@ -105,8 +107,22 @@ final class AllWordsViewModel {
         isAddingNewWord = false
     }
     
+    // Выбор/отмена выбора слова
+    func toggleSelection(for word: Word) {
+        if let index = selectedWords.firstIndex(where: { $0.id == word.id }) {
+            selectedWords.remove(at: index)
+        } else {
+            selectedWords.append(word)
+        }
+    }
+    
     //Удаление слова
-    func deleteWord(_ word: Word) {
-        wordsViewodel.deleteWord(word)
+    func deleteWord() {
+        guard !selectedWords.isEmpty else { return }
+        
+        withAnimation {
+            wordsViewodel.deleteWord(selectedWords)
+            selectedWords.removeAll()
+        }
     }
 }
