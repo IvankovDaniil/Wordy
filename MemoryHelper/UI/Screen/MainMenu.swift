@@ -17,44 +17,60 @@ struct MainMenu: View {
     @Binding var testViewModel: TestViewModel?
 
     var body: some View {
-        VStack(spacing: 0) {
-            TitleMenu()
-            Spacer()
+        ZStack() {
+            VStack(spacing: 0) {
+                TitleMenu()
+                Spacer()
+            }
+            .frame(maxHeight: .infinity)
+
             ButtonMenu(viewModel: viewModel, navigationPath: $navigationPath, testViewModel: $testViewModel)
-            Spacer()
         }
         .frame(maxWidth: .infinity ,maxHeight: .infinity)
         .background {
             Image(.bg)
-                .opacity(0.1)
-        }
-        .ignoresSafeArea(edges: .bottom)
-        .onAppear {
-            print("MainMenu appeared")
+                .opacity(0.05)
         }
     }
 }
 
 private struct TitleMenu: View {
-    let title = "Запоминатор"
+    let title = "WORD"
     
     var body: some View {
-        HStack(alignment: .center) {
-            Text(title)
-                .font(.custom("Arial", size: 35))
-                .bold()
-                .padding(.horizontal, 40)
-            
-            Button {
-                //
-            } label: {
-                Image(systemName: "gearshape.fill")
+        ZStack {
+            HStack {
+                Image("eyes")
                     .resizable()
-                    .foregroundStyle(.black)
-                    .frame(width: 25, height: 25)
+                    .frame(width: 100, height: 100)
+                    .padding(.leading)
+                Spacer()
             }
+            .ignoresSafeArea(.container)
+            HStack(spacing: 0) {
+                Text(title)
+                    .foregroundStyle(.mainGreen)
+                Text("Y")
+                    .foregroundStyle(.mainViolet)
+            }
+            .font(.custom("Arial Black", size: 35))
+            .bold()
             
+            HStack {
+                Spacer()
+                Button {
+                    //
+                } label: {
+                    Image(systemName: "gearshape.fill")
+                        .resizable()
+                        .foregroundStyle(.mainGreen)
+                        .frame(width: 25, height: 25)
+                }
+                .padding(.trailing)
+            }
         }
+        .frame(maxWidth: .infinity)
+        .padding(.top)
     }
 }
 
@@ -65,8 +81,8 @@ private struct ButtonMenu: View {
     
     var body: some View {
         let buttons: [ButtonMenuConfiguration] = [
-            ButtonMenuConfiguration(id: 1, title: "Все слова", image: "📖", isLocked: .unlock, destination: .allWords),
-            ButtonMenuConfiguration(id: 2, title: "Тест", image: "🎯", isLocked: viewModel.conditionForLockMenu(), destination: .test)
+            ButtonMenuConfiguration(id: 1, title: "Все слова", isLocked: .unlock, destination: .allWords),
+            ButtonMenuConfiguration(id: 2, title: "Тест", isLocked: viewModel.conditionForLockMenu(), destination: .test)
         ]
         
         VStack(spacing: 0) {
@@ -105,16 +121,12 @@ private struct ButtonMenuView: View {
                     }
                 } label: {
                     HStack {
-                        Text(button.image)
                         Text(button.title)
                     }
                     .opacity(isLock ? 0.5 : 1)
-                    .frame(width: 280, height: 40)
+                    .frame(maxWidth: .infinity, maxHeight: 40)
                 }
                 .disabled(isLock)
-                .onAppear {
-                    print("Button for \(button.title) appeared")
-                }
                 
                 if isLock {
                     Image(systemName: "lock.circle")
@@ -134,12 +146,13 @@ private struct ButtonMenuView: View {
             })
             
         }
-        .foregroundStyle(.black)
-        .font(.custom("Arial", size: 22))
+        .foregroundStyle(.white)
+        .font(.custom("Arial Black", size: 24))
         .padding(.vertical, 15)
-        .background(.white)
+        .background(.mainViolet)
         .clipShape(.rect(cornerRadius: 15))
         .shadow(color: .gray, radius: 5, x: 5, y: 5)
+        .padding(.horizontal)
         .overlay {
             if showMessage {
                 ShowMessageTextView(showMessage: showMessage)
@@ -154,6 +167,7 @@ private struct ShowMessageTextView: View {
     
     var body: some View {
         Text("У вас в словаре должно быть как минимум 5 слов для открытия теста")
+            .font(.custom("Arial", size: 16))
             .foregroundColor(.white)
             .fixedSize(horizontal: false, vertical: true)
             .padding()
@@ -168,7 +182,6 @@ private struct ShowMessageTextView: View {
 private struct ButtonMenuConfiguration: Identifiable {
     let id: Int
     let title: String
-    let image: String
     let isLocked: LockUnlockMenu
     let destination: Buttons
 }

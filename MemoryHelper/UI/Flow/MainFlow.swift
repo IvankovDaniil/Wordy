@@ -21,9 +21,6 @@ struct MainFlow: View {
     var body: some View {
         NavigationStack(path: $navigationPath) {
             MainMenu(navigationPath: $navigationPath, viewModel: viewModel, testViewModel: $testViewModel)
-                .onAppear {
-                    print("MainFlow appeared")
-                }
                 .navigationDestination(for: Buttons.self) { destination in
                     switch destination {
                     case .allWords:

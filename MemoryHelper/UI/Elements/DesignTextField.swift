@@ -5,20 +5,13 @@
 //  Created by Даниил Иваньков on 06.03.2025.
 //
 
-
-//
-//  DesignTextField.swift
-//  MemoryHelper
-//
-//  Created by Даниил Иваньков on 05.03.2025.
-//
 import SwiftUI
 
 struct DesignTextField: View {
     @Binding var text: String
     @FocusState private var focusField: Field?
     @Binding var editing: Bool
-    @State private var borderColor = Color.gray
+    @State private var borderColor = Color.mainViolet
     @State private var borderWidth = 1.0
     
     private let placeholder = "Введите слово"
@@ -34,6 +27,7 @@ struct DesignTextField: View {
             ZStack {
                 TextField("", text: $text)
                     .padding(6)
+                    .frame(height: 40)
                     .background {
                         RoundedRectangle(cornerRadius: 4, style: .continuous)
                             .stroke(borderColor, lineWidth: borderWidth)
@@ -49,11 +43,11 @@ struct DesignTextField: View {
                             .foregroundStyle(.white)
                             .colorMultiply(placeholderColor)
                             .animatableFont(size: placeholderFontSize)
-                            .padding(2)
+                            .padding(.horizontal ,2)
                             .layoutPriority(1)
                     }
                     .padding(.leading, placeholderLeadingPadding)
-                    .padding(.bottom, placeholderBottomPadding)
+                    .offset(y: (editing || !text.isEmpty) ? -18 : 0)
                     Spacer()
                 }
             }
@@ -61,7 +55,7 @@ struct DesignTextField: View {
             Text(isValid ?? true ? "" : "Ошибка")
                 .font(.custom("Arial", size: 10))
                 .foregroundStyle(isValid ?? true ? .gray : .red)
-                .padding(.leading, 10)
+                .padding([.leading, .bottom], 5)
         }
         .onTapGesture {
             editing = true
@@ -138,4 +132,18 @@ struct DesignTextField: View {
     private enum Field {
       case textField
     }
+}
+
+#Preview {
+    struct PreviewWrapper: View {
+        @State private var text: String = ""
+        @State private var isEditing: Bool = false
+
+        var body: some View {
+            DesignTextField(text: $text, editing: $isEditing)
+                .padding()
+        }
+    }
+
+    return PreviewWrapper()
 }

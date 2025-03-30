@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 enum TestType {
     case freeInput, chooseRightTranslate, listenAndType
@@ -26,14 +27,9 @@ final class TestViewModel: Equatable {
     var isRightWord: Bool = false
     var isValid: Bool?
     
-    deinit {
-        print("deinit")
-    }
-    
     init(words: [Word]) {
         self.words = words
         self.setup()
-        print("New TestViewModel created with \(words.count) words")
     }
     
     func setup() {
@@ -107,4 +103,5 @@ final class TestViewModel: Equatable {
             isValid = false
         }
     }
+
 }

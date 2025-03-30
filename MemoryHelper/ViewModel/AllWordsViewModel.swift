@@ -66,7 +66,9 @@ final class AllWordsViewModel {
     //Добавление нового слова
     func addNewWord(_ word: String) {
         
-        guard word != "" else {
+        let newFilteredWordWord = filterWord(word)
+        
+        guard newFilteredWordWord != "" else {
             isAddingNewWord = false
             return
         }
@@ -76,23 +78,23 @@ final class AllWordsViewModel {
             return
         }
         
-        let placeholder = Word(original: "\(word)", translation: "Переводим...")
+        let placeholder = Word(original: "\(newFilteredWordWord)", translation: "Переводим...")
         wordsViewodel.addWord(placeholder)
         
         Task {
             do {
-                let detectionCode = try await networking.findLanguageCode(word)
+                let detectionCode = try await networking.findLanguageCode(newFilteredWordWord)
                 let isRussian = detectionCode == "ru"
                 
                 let translate = try await networking.translateWordWithAPI(
-                    word,
+                    newFilteredWordWord,
                     isRussian ? "ru" : "en",
                     isRussian ? "en" : "ru"
                 )
                 
                 let newWord = Word(
-                    original: isRussian ? word : translate,
-                    translation: isRussian ? translate : word
+                    original: isRussian ? newFilteredWordWord : translate,
+                    translation: isRussian ? translate : newFilteredWordWord
                 )
                 
                 if let index = words.firstIndex(where: { $0.translation == "Переводим..." }) {
@@ -105,6 +107,12 @@ final class AllWordsViewModel {
         
         newWord = ""
         isAddingNewWord = false
+        
+        func filterWord(_ word: String) -> String {
+            let filtered = word.filter { $0.isLetter || $0 == " " || $0 == "-" }
+            let filteredWord = filtered.split(separator: " ", omittingEmptySubsequences: true).joined(separator: " ")
+            return String(filteredWord.prefix(30))
+        }
     }
     
     // Выбор/отмена выбора слова

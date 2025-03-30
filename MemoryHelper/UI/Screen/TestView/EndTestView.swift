@@ -7,28 +7,36 @@
 
 import SwiftUI
 
+
 struct EndTestView: View {
     @Binding var testViewModel: TestViewModel?
     @Environment(\.dismiss) var dismiss
     var body: some View {
         VStack {
-            Text("Поздравляю, ты прошел все задания 🎉")
-                .font(.custom("Arial", size: 23))
-                .bold()
-                .foregroundColor(.green)
-                .transition(.opacity)
+            Text("Тест пройден")
+                .font(.custom("Arial Black", size: 24))
+                .foregroundStyle(.white)
+                .padding()
+                .frame(maxWidth: .infinity)
+                .background(Color.mainGreen)
+                .cornerRadius(12)
+                .shadow(radius: 5)
+                .padding()
+                .multilineTextAlignment(.center)
             Button {
                 dismiss()
                 testViewModel = nil
             } label: {
                 Text("Обратно в меню")
+                    .padding()
+                    .font(.custom("Arial Black", size: 24))
+                    .background(Color.mainViolet)
+                    .foregroundColor(.white)
+                    .cornerRadius(10)
+                    .shadow(radius: 5)
             }
-            .font(.custom("Arial", size: 18))
-            .padding()
-            .background(Color.blue)
-            .foregroundColor(.white)
-            .cornerRadius(10)
-            .shadow(radius: 5)
         }
+        .padding()
     }
 }
+

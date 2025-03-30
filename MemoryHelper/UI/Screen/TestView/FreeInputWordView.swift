@@ -16,26 +16,26 @@ struct FreeInputWordView: View {
     
     
     var body: some View {
-        GeometryReader { geo in
-            VStack(spacing: 20) {
-                Text("Напишите правильный перевод слова")
-                    .ruleTextModifier()
-                
-                Text(word.original)
-                    .wordTextModifier()
-                
-                AcceptButtonView(testViewModel: testViewModel, word: word)
-                    .focused($isFocused)
-            }
-            .frame(height: 500)
-            .frame(maxHeight: .infinity)
+        VStack(spacing: 20) {
+            Text("Напишите правильный перевод слова")
+                .ruleTextModifier()
+            
+            Text(word.original)
+                .wordTextModifier(color: .mainGreen)
+            
+            
+            AcceptButtonView(testViewModel: testViewModel, word: word)
+                .focused($isFocused)
         }
+        .frame(height: 500)
+        .frame(maxHeight: .infinity)
         .padding()
         .contentShape(Rectangle())
         .onTapGesture {
             isFocused = false
             editing = false
         }
+        
     }
 }
-    
+

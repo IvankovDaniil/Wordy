@@ -19,29 +19,28 @@ struct ListeningTestView: View {
     @State var editing: Bool = false
     
     var body: some View {
-        GeometryReader { geo in
-            VStack(spacing: 20) {
-                Text("Прослушайте и напишите правильно слово")
-                    .ruleTextModifier()
-                
-                Image(systemName: "speaker.wave.3.fill")
-                    .wordTextModifier()
-                    .onTapGesture {
-                        speechManager.speak(text: word.translation)
-                    }
-                
-                AcceptButtonView(testViewModel: testViewModel, word: word)
-                    .focused($isFocused)
-            }
-            .frame(height: 500)
-            .frame(maxHeight: .infinity)
+        VStack(spacing: 20) {
+            Text("Прослушайте и напишите правильно слово")
+                .ruleTextModifier()
+            
+            Image(systemName: "speaker.wave.3.fill")
+                .wordTextModifier(color: .mainGreen)
+                .onTapGesture {
+                    speechManager.speak(text: word.translation)
+                }
+            
+            AcceptButtonView(testViewModel: testViewModel, word: word)
+                .focused($isFocused)
         }
+        .frame(height: 500)
+        .frame(maxHeight: .infinity)
         .padding()
         .contentShape(Rectangle())
         .onTapGesture {
             isFocused = false
             editing = false
         }
+        
     }
 }
 

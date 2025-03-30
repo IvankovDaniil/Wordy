@@ -28,19 +28,22 @@ private struct AllWordsListView: View {
                             }
                         }
                     }
-                    withAnimation {
-                        AddButton(viewModel: viewModel, isFocused: _isFocused, screenWidth: screenWidthSize)
-                            .opacity(isEditing ? 0 : 1)
-                            .disabled(isEditing)
-                            .padding(.trailing, 25)
+                    if viewModel.words.count < 50 {
+                        withAnimation {
+                            AddButton(viewModel: viewModel, isFocused: _isFocused, screenWidth: screenWidthSize)
+                                .opacity(isEditing ? 0 : 1)
+                                .disabled(isEditing)
+                                .padding(.trailing, 25)
+                        }
                     }
               }
+                .padding(.top, 15)
                 .padding(.leading, 30)
+                .padding(.trailing, 16)
             }
             .scrollIndicators(.hidden)
         }
         .frame(maxWidth: .infinity)
-        .padding(.top, 15)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 HStack(spacing: 0) {
@@ -52,6 +55,7 @@ private struct AllWordsListView: View {
                         }
                     } label: {
                         Image(systemName: viewModel.selectedWords.isEmpty ? (isEditing ? "checkmark" : "pencil") : "trash")
+                            .foregroundStyle(.mainGreen)
                     }
                 }
             }
@@ -65,6 +69,7 @@ private struct AllWordsListView: View {
                         Text("Назад")
                             .font(.custom("Arial", size: 20))
                     }
+                    .foregroundStyle(.mainGreen)
                 }
 
             }
@@ -96,23 +101,25 @@ private struct WordView: View {
     @State var showTranslation = false
     @State private var isShowConfirmedDialog = false
     @Binding var isEdit: Bool
+    @State var isMark: Bool = false
     
     let screenWidth: CGFloat
     
     var body: some View {
         ZStack(alignment: .topTrailing) {
             if isEdit {
-                DeleteButton(word: word, viewModel: viewModel) 
+                DeleteButton(word: word, viewModel: viewModel, isMark: $isMark)
             }
       
             Text(showTranslation ? word.translation : word.original)
-                .customWordView(screenWidth: screenWidth)
+                .customWordView(screenWidth: screenWidth, color: .mainGreen)
                 .onTapGesture {
                     withAnimation {
                         showTranslation.toggle()
                     }
                 }
-                .rotationEffect(.degrees(isEdit ? 3 : 0))
+                .rotationEffect(.degrees(isEdit ? 2 : 0))
+                .scaleEffect(isEdit ? 1.02 : 1.0)
                 .animation(
                     isEdit
                     ? .easeInOut(duration: 0.1).repeatForever()
@@ -121,6 +128,16 @@ private struct WordView: View {
                 )
                 .disabled(isEdit)
         }
+        .onTapGesture {
+            isMark.toggle()
+            if isMark {
+                if !viewModel.selectedWords.contains(word) {
+                    viewModel.selectedWords.append(word)
+                }
+            } else {
+                viewModel.selectedWords.removeAll(where: { $0 == word })
+            }
+        }
     }
 }
 
@@ -128,23 +145,14 @@ private struct DeleteButton: View {
     let word: Word
     @Bindable var viewModel: AllWordsViewModel
 
-    @State private var isMark = false
+    @Binding var isMark: Bool
     
     var body: some View {
-        Button() {
-            isMark.toggle()
-            if isMark {
-                viewModel.selectedWords.append(word)
-            } else {
-                viewModel.selectedWords.removeAll(where: { $0 == word })
-            }
-        } label: {
-            Image(systemName: isMark ? "checkmark.circle.fill" : "circle")
-                .frame(width: 20, height: 20)
-                .shadow(radius: 6, x: 10, y: 10)
-                .foregroundStyle(.blue)
-        }
-        .zIndex(1)
+        Image(systemName: isMark ? "checkmark.circle.fill" : "circle")
+            .frame(width: 20, height: 20)
+            .shadow(radius: 6, x: 10, y: 10)
+            .foregroundStyle(.mainViolet)
+            .zIndex(1)
     }
 }
 
@@ -156,19 +164,32 @@ private struct AddButton: View {
     
     var body: some View {
         if viewModel.isAddingNewWord == true {
-            DesignTextField(text: $viewModel.newWord, editing: $editing)
-            .onSubmit {
-                viewModel.addNewWord(viewModel.newWord)
+            HStack(alignment: .top) {
+                DesignTextField(text: $viewModel.newWord, editing: $editing)
+                    .onSubmit {
+                        viewModel.addNewWord(viewModel.newWord)
+                    }
+                    .padding(.trailing, 10)
+                    .focused($isFocused)
+                Button {
+                    viewModel.addNewWord(viewModel.newWord)
+                    isFocused = false
+                } label: {
+                    Image(systemName: "checkmark")
+                        .resizable()
+                        .frame(width: 20, height: 20)
+                }
+                .padding(.top, 10)
+                .foregroundStyle(.mainViolet)
             }
-            .padding(.trailing, 10)
-            .focused($isFocused)
         } else {
             Button(action: {
                 viewModel.isAddingNewWord = true
                 isFocused = true
             }) {
                 Text("+ Добавить слово")
-                    .customWordView(screenWidth: screenWidth)
+                    .foregroundStyle(.white)
+                    .customWordView(screenWidth: screenWidth, color: .mainViolet)
             }
         }
         

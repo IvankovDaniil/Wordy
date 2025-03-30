@@ -17,6 +17,7 @@ struct MemoryHelperApp: App {
     }()
     
     @State private var viewModel: WordViewModel
+    @State private var isShowLaunchScreen: Bool = true
     
     init() {
         let context = sharedModelContainer.mainContext
@@ -25,7 +26,22 @@ struct MemoryHelperApp: App {
     
     var body: some Scene {
         WindowGroup {
-            MainFlow(viewModel: viewModel)
+            ZStack {
+                MainFlow(viewModel: viewModel)
+                    .opacity(isShowLaunchScreen ? 0 : 1)
+                
+                if isShowLaunchScreen {
+                    LaunchScreenAnimation()
+                        .transition(.opacity)
+                        .onAppear {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                                withAnimation {
+                                    isShowLaunchScreen = false
+                                }
+                            }
+                        }
+                }
+            }
         }
         .modelContainer(sharedModelContainer)
     }

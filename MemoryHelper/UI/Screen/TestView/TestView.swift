@@ -14,7 +14,7 @@ struct TestView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            Spacer()
+
             if let testViewModel = testViewModel, let currentWord = testViewModel.currentWord {
                 switch testViewModel.currentType {
                 case .freeInput:
@@ -30,12 +30,9 @@ struct TestView: View {
             } else {
                 ProgressView()
             }
-            Spacer()
+
         }
-        .background {
-            Image(.bg)
-                .opacity(0.1)
-        }
+        .ignoresSafeArea()
         .navigationBarBackButtonHidden(true)
         .toolbar {
             ToolbarItem(placement: .topBarLeading) {
@@ -45,7 +42,9 @@ struct TestView: View {
                     HStack(spacing: 0) {
                         Image(systemName: "chevron.left")
                         Text("Назад")
+                            .font(.custom("Arial", size: 20))
                     }
+                    .foregroundStyle(.mainGreen)
                 }
             }
             
@@ -83,26 +82,42 @@ struct AcceptButtonView: View {
                 .autocorrectionDisabled(true)
                 .keyboardType(.asciiCapable)
             
-            Button {
-                print("До метода: ", word.translation)
-                testViewModel.freeInputWordCheck(word: wordInput)
-                print("после: ", word.translation)
-                isFocused = false
-            } label: {
-                Text("Проверить")
-                    .font(.headline)
-                    .foregroundColor(.white)
-                    .padding()
-                    .frame(maxWidth: .infinity)
-                    .background(Color.blue)
-                    .cornerRadius(12)
-            }
-            NextTestButtonView(isRightWord: $testViewModel.isRightWord, action: {
-                testViewModel.nextTest()
-                wordInput = ""
-            })
-            .transition(.opacity)
-            .opacity(testViewModel.isRightWord ? 1 : 0)
+                Button {
+                    let generator = UINotificationFeedbackGenerator()
+                    generator.prepare()
+                    
+                    if testViewModel.isRightWord {
+                        testViewModel.isRightWord = false
+                        testViewModel.nextTest()
+                        wordInput = ""
+                    } else {
+                        print("До метода: ", word.translation)
+                        testViewModel.freeInputWordCheck(word: wordInput)
+                        if testViewModel.isRightWord {
+                            generator.notificationOccurred(.success)
+                        } else {
+                            generator.notificationOccurred(.error)
+                        }
+                        print("после: ", word.translation)
+                        isFocused = false
+                    }
+                } label: {
+                    Text(testViewModel.isRightWord ? "Следующий вопрос" : "Проверить")
+                        .font(.custom("Arial Black", size: 24))
+                        .foregroundColor(.white)
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .background(Color.mainViolet)
+                        .cornerRadius(12)
+                }
+            
+            Text("Правильно! 🎉")
+                .font(.custom("Arial", size: 20))
+                .foregroundColor(.green)
+                .transition(.opacity)
+                .padding(.top, 10)
+                .opacity(testViewModel.isRightWord ? 1.0 : 0.0)
+                .clipped()
         }
     }
 }

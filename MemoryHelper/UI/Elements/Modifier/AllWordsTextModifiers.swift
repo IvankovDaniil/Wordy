@@ -10,6 +10,7 @@ import SwiftUI
 
 struct AllWordsViewModifier: ViewModifier {
     var screenWidth: CGFloat
+    let color: Color
 
     func body(content: Content) -> some View {
         let dynamicFontSize = max(16, screenWidth * 0.05)
@@ -17,21 +18,19 @@ struct AllWordsViewModifier: ViewModifier {
         
         return content
             .font(.custom("Arial", size: dynamicFontSize))
+            .foregroundStyle(.white)
             .lineLimit(1)
             .layoutPriority(1)
             .fixedSize(horizontal: true, vertical: true)
             .padding(dynamicPadding)
-            .background(Color.gray.opacity(0.2))
+            .background(color)
             .clipShape(Capsule())
-            .overlay {
-                Capsule().stroke()
-            }
     }
 }
 
 extension View {
     
-    func customWordView(screenWidth: CGFloat) -> some View {
-        modifier(AllWordsViewModifier(screenWidth: screenWidth))
+    func customWordView(screenWidth: CGFloat, color: Color = .mainViolet) -> some View {
+        modifier(AllWordsViewModifier(screenWidth: screenWidth, color: color))
     }
 }

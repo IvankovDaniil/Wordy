@@ -18,14 +18,8 @@ struct NextTestButtonView: View {
     }
     
     var body: some View {
-        VStack() {
-            Text("Правильно! 🎉")
-                .font(.custom("Arial", size: 20))
-                .foregroundColor(.green)
-                .transition(.opacity)
-                .padding(.top, 10)
-            
-            Button("Следующий") {
+        VStack(spacing: 0) {
+            Button("Следующее слово") {
                 withAnimation {
                     print("NextTestButton pressed")
                     selectedWord = nil
@@ -33,12 +27,13 @@ struct NextTestButtonView: View {
                     action()
                 }
             }
-            .font(.custom("Arial", size: 18))
-            .padding()
-            .background(Color.blue)
-            .foregroundColor(.white)
-            .cornerRadius(10)
-            .shadow(radius: 5)
+            .wordTextModifier(color: .mainViolet)
+            
+            Text("Правильно! 🎉")
+                .font(.custom("Arial", size: 20))
+                .foregroundColor(.green)
+                .transition(.opacity)
+                .padding(.top, 10)
         }
     }
 }

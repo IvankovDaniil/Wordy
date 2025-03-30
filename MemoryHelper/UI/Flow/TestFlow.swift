@@ -21,9 +21,11 @@ struct TestFlow: View {
     var body: some View {
         VStack {
             TestView(testViewModel: $testViewModel)
-                .onAppear {
-                    print("testFlow appear")
+                .background {
+                    Image(.bg)
+                        .opacity(0.05)
                 }
+
         }
     }
 }

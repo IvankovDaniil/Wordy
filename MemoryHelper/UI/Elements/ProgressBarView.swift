@@ -14,8 +14,11 @@ struct ProgressBarView: View {
     var body: some View {
         HStack {
             ProgressView(value: currentValue, total: totalValue)
+                .tint(.mainViolet)
+                .scaleEffect(x: 1, y: 3, anchor: .center)
             Text("\(Int(currentValue))/\(Int(totalValue))")
                 .font(.custom("Arial", size: 20))
+                .foregroundStyle(.mainGreen)
         }
         .padding(.horizontal)
     }

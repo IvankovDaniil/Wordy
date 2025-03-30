@@ -21,14 +21,15 @@ struct RuleTextModifier: ViewModifier {
 }
 
 struct WordTextModifier: ViewModifier {
+    let color: Color
     
     func body(content: Content) -> some View {
         content
-            .font(.custom("Arial", size: 24))
-            .fontWeight(.bold)
+            .font(.custom("Arial Black", size: 24))
+            .foregroundStyle(.white)
             .padding()
             .frame(maxWidth: .infinity, maxHeight: 60)
-            .background(Color.blue.opacity(0.2))
+            .background(color)
             .cornerRadius(12)
             .shadow(radius: 5)
     }
@@ -41,7 +42,7 @@ extension View {
         modifier(RuleTextModifier())
     }
     
-    func wordTextModifier() -> some View {
-        modifier(WordTextModifier())
+    func wordTextModifier(color: Color) -> some View {
+        modifier(WordTextModifier(color: color))
     }
 }

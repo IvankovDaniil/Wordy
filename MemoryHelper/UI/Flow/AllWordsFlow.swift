@@ -16,7 +16,7 @@ struct AllWordsFlow: View {
             .background {
                 Image(.bg)
                     .resizable(resizingMode: .tile)
-                    .opacity(0.2)
+                    .opacity(0.05)
                     .ignoresSafeArea()
             }
         
