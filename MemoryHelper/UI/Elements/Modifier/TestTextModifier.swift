@@ -25,7 +25,7 @@ struct WordTextModifier: ViewModifier {
     
     func body(content: Content) -> some View {
         content
-            .font(.custom("Arial Black", size: 24))
+            .font(.custom("Arial Black", size: 22))
             .foregroundStyle(.white)
             .padding()
             .frame(maxWidth: .infinity, maxHeight: 60)

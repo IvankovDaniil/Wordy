@@ -11,8 +11,13 @@ import AVFoundation
 struct ListeningTestView: View {
     @Bindable var testViewModel: TestViewModel
     let word: Word
+    @AppStorage("selectedLanguage") var selectedLanguageRaw: String = Language.english.rawValue
+    private var selectedLanguage: Language {
+        get { Language(rawValue: selectedLanguageRaw) ?? .english }
+        set { selectedLanguageRaw = newValue.rawValue }
+    }
     
-    private let speechManager = SpeechManager(language: "en-US")
+    private let speechManager = SpeechManager(/*language: selectedLanguage*/)
     
     @State var wordInput: String = ""
     @FocusState private var isFocused: Bool
@@ -26,7 +31,7 @@ struct ListeningTestView: View {
             Image(systemName: "speaker.wave.3.fill")
                 .wordTextModifier(color: .mainGreen)
                 .onTapGesture {
-                    speechManager.speak(text: word.translation)
+                    speechManager.speak(text: word.translation, language: selectedLanguage)
                 }
             
             AcceptButtonView(testViewModel: testViewModel, word: word)
@@ -46,21 +51,23 @@ struct ListeningTestView: View {
 
 private final class SpeechManager {
     let speechManager: AVSpeechSynthesizer = AVSpeechSynthesizer()
-    let language: String
     
-    init(language: String) {
-        self.language = language
-    }
-    
-    deinit {
-        print("speech Deinit")
-    }
-    
-    func speak(text: String) {
+    func speak(text: String, language: Language) {
+        let languageCode = {
+            switch language {
+            case .english:
+                return "en-US"
+            case .italian:
+                return "it-IT"
+            case .french:
+                return "fr-FR"
+            }
+        }()
+        
         speechManager.stopSpeaking(at: .immediate)
         
         let utterance = AVSpeechUtterance(string: text)
-        utterance.voice = AVSpeechSynthesisVoice(language: language)
+        utterance.voice = AVSpeechSynthesisVoice(language: languageCode)
         
         speechManager.speak(utterance)
     }

@@ -12,14 +12,9 @@ struct AllWordsFlow: View {
     @Bindable var viewModel: WordViewModel
     
     var body: some View {
-        AllWordsView(viewModel: viewModel)
-            .background {
-                Image(.bg)
-                    .resizable(resizingMode: .tile)
-                    .opacity(0.05)
-                    .ignoresSafeArea()
-            }
-        
+        NavigationStack {
+            AllWordsView(viewModel: viewModel)
+        }
     }
 }
 

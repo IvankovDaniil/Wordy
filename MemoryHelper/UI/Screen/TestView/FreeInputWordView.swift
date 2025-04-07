@@ -9,6 +9,7 @@ import SwiftUI
 struct FreeInputWordView: View {
     @Bindable var testViewModel: TestViewModel
     let word: Word
+    //@Binding var path: NavigationPath
     
     @State var wordInput: String = ""
     @FocusState private var isFocused: Bool
@@ -27,6 +28,7 @@ struct FreeInputWordView: View {
             AcceptButtonView(testViewModel: testViewModel, word: word)
                 .focused($isFocused)
         }
+        .padding(.top, 20)
         .frame(height: 500)
         .frame(maxHeight: .infinity)
         .padding()

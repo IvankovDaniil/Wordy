@@ -7,25 +7,29 @@
 
 import SwiftUI
 
+
 struct TestFlow: View {
-    @Bindable var viewModel: WordViewModel
-    @Binding var testViewModel: TestViewModel?
+    @State var testViewModel: TestViewModel?
+    let words: [Word]
+    
+    @State private var isPresenting = false
      
-    init(viewModel: WordViewModel, testViewModel: Binding<TestViewModel?>) {
-        print("TestFlow init")
-        self.viewModel = viewModel
-        self._testViewModel = testViewModel
+    init(words: [Word]) {
+        self.words = words
+        print("MY LOG: testFLOW initiated")
     }
     
-
+    
     var body: some View {
         VStack {
-            TestView(testViewModel: $testViewModel)
-                .background {
-                    Image(.bg)
-                        .opacity(0.05)
+            StartsTestView(testViewModel: $testViewModel, words: words) {
+                isPresenting = true
+            }
+            .fullScreenCover(isPresented: $isPresenting, content: {
+                NavigationStack() {
+                    TestView(testViewModel: $testViewModel)
                 }
-
+            })
         }
     }
 }

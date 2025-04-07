@@ -13,24 +13,19 @@ struct TestView: View {
     @State private var isShowConfirmedDialog = false
     
     var body: some View {
-        VStack(spacing: 0) {
-
-            if let testViewModel = testViewModel, let currentWord = testViewModel.currentWord {
+        VStack(spacing: 0) { 
+            if let testViewModel = testViewModel {
                 switch testViewModel.currentType {
-                case .freeInput:
-                    FreeInputWordView(testViewModel: testViewModel, word: currentWord)
                 case .chooseRightTranslate:
-                    ChooseRightTranslateView(testViewModel: testViewModel, word: currentWord)
-                case .listenAndType:
-                    ListeningTestView(testViewModel: testViewModel, word: currentWord)
+                    ChooseRightTranslateView(testViewModel: testViewModel, word: testViewModel.currentWord!)
                 case .none:
                     EndTestView(testViewModel: $testViewModel)
+                case .some(.freeInput):
+                    FreeInputWordView(testViewModel: testViewModel, word: testViewModel.currentWord!)
+                case .some(.listenAndType):
+                    ListeningTestView(testViewModel: testViewModel, word: testViewModel.currentWord!)
                 }
-                
-            } else {
-                ProgressView()
             }
-
         }
         .ignoresSafeArea()
         .navigationBarBackButtonHidden(true)
@@ -66,58 +61,3 @@ struct TestView: View {
 }
 
 
-struct AcceptButtonView: View {
-    @Bindable var testViewModel: TestViewModel
-    let word: Word
-    
-    @State var wordInput: String = ""
-    @FocusState private var isFocused: Bool
-    @State var editing: Bool = false
-    
-    var body: some View {
-        VStack(spacing: 0) {
-            DesignTextField(text: $wordInput, editing: $editing, isValid: testViewModel.isValid)
-                .focused($isFocused)
-                .padding(.horizontal)
-                .autocorrectionDisabled(true)
-                .keyboardType(.asciiCapable)
-            
-                Button {
-                    let generator = UINotificationFeedbackGenerator()
-                    generator.prepare()
-                    
-                    if testViewModel.isRightWord {
-                        testViewModel.isRightWord = false
-                        testViewModel.nextTest()
-                        wordInput = ""
-                    } else {
-                        print("До метода: ", word.translation)
-                        testViewModel.freeInputWordCheck(word: wordInput)
-                        if testViewModel.isRightWord {
-                            generator.notificationOccurred(.success)
-                        } else {
-                            generator.notificationOccurred(.error)
-                        }
-                        print("после: ", word.translation)
-                        isFocused = false
-                    }
-                } label: {
-                    Text(testViewModel.isRightWord ? "Следующий вопрос" : "Проверить")
-                        .font(.custom("Arial Black", size: 24))
-                        .foregroundColor(.white)
-                        .padding()
-                        .frame(maxWidth: .infinity)
-                        .background(Color.mainViolet)
-                        .cornerRadius(12)
-                }
-            
-            Text("Правильно! 🎉")
-                .font(.custom("Arial", size: 20))
-                .foregroundColor(.green)
-                .transition(.opacity)
-                .padding(.top, 10)
-                .opacity(testViewModel.isRightWord ? 1.0 : 0.0)
-                .clipped()
-        }
-    }
-}

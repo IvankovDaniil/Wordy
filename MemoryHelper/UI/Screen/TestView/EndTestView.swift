@@ -11,6 +11,7 @@ import SwiftUI
 struct EndTestView: View {
     @Binding var testViewModel: TestViewModel?
     @Environment(\.dismiss) var dismiss
+    
     var body: some View {
         VStack {
             Text("Тест пройден")
@@ -36,7 +37,7 @@ struct EndTestView: View {
                     .shadow(radius: 5)
             }
         }
-        .padding()
+        .padding(.horizontal)
     }
 }
 

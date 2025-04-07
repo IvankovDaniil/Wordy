@@ -8,8 +8,10 @@
 import Foundation
 import SwiftUI
 
-enum TestType {
-    case freeInput, chooseRightTranslate, listenAndType
+enum TestType: String, CaseIterable {
+    case freeInput = "Тренировка перевода"
+    case chooseRightTranslate = "Тест на знание слов"
+    case listenAndType = "Слушай и повторяй"
 }
 
 @Observable
@@ -30,6 +32,7 @@ final class TestViewModel: Equatable {
     init(words: [Word]) {
         self.words = words
         self.setup()
+        print("MY LOG: testViewModel initiate")
     }
     
     func setup() {
@@ -53,7 +56,7 @@ final class TestViewModel: Equatable {
     
     func loadNextTest() {
         let newWord = testWord[currentIndex].word
-        print("Старое слово: \(currentWord?.original ?? "nil") -> Новое слово: \(newWord.original)")
+        print("MY LOG: Старое слово: \(currentWord?.original ?? "nil") -> Новое слово: \(newWord.original)")
         
         currentType = testWord[currentIndex].test
         currentWord = newWord
@@ -102,6 +105,10 @@ final class TestViewModel: Equatable {
         } else {
             isValid = false
         }
+    }
+    
+    func isLock() -> Bool {
+        self.words.count < 5
     }
 
 }

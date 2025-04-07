@@ -14,16 +14,17 @@ final class AllWordsViewModel {
     var wordsViewodel: WordsManaging
     private var networking = Networking()
     var newWord: String = ""
-    var isAddingNewWord = false
+    let selectedLanguage: Language
     
     var selectedWords = [Word]()
     
-    init(wordsViewodel: WordViewModel) {
+    init(wordsViewodel: WordViewModel, selectedLanguage: Language) {
         self.wordsViewodel = wordsViewodel
+        self.selectedLanguage = selectedLanguage
     }
     
     var words: [Word] {
-        wordsViewodel.words
+        wordsViewodel.words.filter { $0.language == selectedLanguage.code }
     }
     
     //Расчет максимальной длины слова
@@ -69,35 +70,34 @@ final class AllWordsViewModel {
         let newFilteredWordWord = filterWord(word)
         
         guard newFilteredWordWord != "" else {
-            isAddingNewWord = false
             return
         }
         
         guard !words.contains(where: { $0.original == word }) else {
-            isAddingNewWord = false
             return
         }
         
-        let placeholder = Word(original: "\(newFilteredWordWord)", translation: "Переводим...")
+        let placeholder = Word(original: "\(newFilteredWordWord)", translation: "Переводим...", language: selectedLanguage.code)
         wordsViewodel.addWord(placeholder)
         
         Task {
             do {
-                let detectionCode = try await networking.findLanguageCode(newFilteredWordWord)
+                let detectionCode = try await networking.findLanguageCode(newFilteredWordWord, selectedLanguage.code)
                 let isRussian = detectionCode == "ru"
                 
                 let translate = try await networking.translateWordWithAPI(
                     newFilteredWordWord,
-                    isRussian ? "ru" : "en",
-                    isRussian ? "en" : "ru"
+                    isRussian ? "ru" : "\(selectedLanguage.code)",
+                    isRussian ? "\(selectedLanguage.code)" : "ru"
                 )
                 
                 let newWord = Word(
                     original: isRussian ? newFilteredWordWord : translate,
-                    translation: isRussian ? translate : newFilteredWordWord
+                    translation: isRussian ? translate : newFilteredWordWord,
+                    language: selectedLanguage.code
                 )
                 
-                if let index = words.firstIndex(where: { $0.translation == "Переводим..." }) {
+                if let index = wordsViewodel.words.firstIndex(where: { $0.translation == "Переводим..." }) {
                     wordsViewodel.updateWord(at: index, with: newWord)
                 }
             } catch {
@@ -106,7 +106,6 @@ final class AllWordsViewModel {
         }
         
         newWord = ""
-        isAddingNewWord = false
         
         func filterWord(_ word: String) -> String {
             let filtered = word.filter { $0.isLetter || $0 == " " || $0 == "-" }
@@ -133,4 +132,5 @@ final class AllWordsViewModel {
             selectedWords.removeAll()
         }
     }
+    
 }

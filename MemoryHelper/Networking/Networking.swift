@@ -18,7 +18,7 @@ final class Networking {
     private let detectCodeURL: URL? = URL(string: "https://translate.api.cloud.yandex.net/translate/v2/detect")
     private let idFolder = "b1g6d27r279k56i0vs93"
     
-    func translateWordWithAPI(_ word: String,_ sourceLanguaggeCode: String, _ targetLanguageCode: String) async throws -> String {
+    func translateWordWithAPI(_ word: String, _ sourceLanguaggeCode: String, _ targetLanguageCode: String) async throws -> String {
         
         guard let url = baseURL else {
             throw NetworkError.badURL
@@ -49,7 +49,7 @@ final class Networking {
         return decodedResponse.translations.first?.text ?? "Ошибка"
     }
     
-    func findLanguageCode(_ word: String) async throws -> String {
+    func findLanguageCode(_ word: String, _ languageCode: String) async throws -> String {
         guard let url = detectCodeURL else {
             throw NetworkError.badURL
         }
@@ -61,7 +61,7 @@ final class Networking {
         
         let httpBody: [String : Any] = [
             "folderId": "\(idFolder)",
-            "languageCodeHints":["ru", "en"],
+            "languageCodeHints":["ru", "\(languageCode)"],
             "text": "\(word)"
         ]
         

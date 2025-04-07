@@ -1,0 +1,39 @@
+{
+  "english": [
+    { "original": "Семья", "translation": "Family", "language": "Английский" },
+    { "original": "Любовь", "translation": "Love", "language": "Английский" },
+    { "original": "Мама", "translation": "Mom", "language": "Английский" },
+    { "original": "Привет", "translation": "Hello", "language": "Английский" },
+    { "original": "Пока", "translation": "Bye", "language": "Английский" },
+    { "original": "Спасибо", "translation": "Thank you", "language": "Английский" },
+    { "original": "Конечно", "translation": "Of course", "language": "Английский" },
+    { "original": "Удачи", "translation": "Good luck", "language": "Английский" },
+    { "original": "Время", "translation": "Time", "language": "Английский" },
+    { "original": "Дом", "translation": "House", "language": "Английский" }
+  ],
+  "italian": [
+    { "original": "Семья", "translation": "Famiglia", "language": "Итальянский" },
+    { "original": "Любовь", "translation": "Amore", "language": "Итальянский" },
+    { "original": "Мама", "translation": "Mamma", "language": "Итальянский" },
+    { "original": "Привет", "translation": "Ciao", "language": "Итальянский" },
+    { "original": "Пока", "translation": "Addio", "language": "Итальянский" },
+    { "original": "Спасибо", "translation": "Grazie", "language": "Итальянский" },
+    { "original": "Конечно", "translation": "Certo", "language": "Итальянский" },
+    { "original": "Удачи", "translation": "Buona fortuna", "language": "Итальянский" },
+    { "original": "Время", "translation": "Tempo", "language": "Итальянский" },
+    { "original": "Дом", "translation": "Casa", "language": "Итальянский" }
+  ],
+  "french": [
+    { "original": "Семья", "translation": "Famille", "language": "Французский" },
+    { "original": "Любовь", "translation": "Amour", "language": "Французский" },
+    { "original": "Мама", "translation": "Maman", "language": "Французский" },
+    { "original": "Привет", "translation": "Salut", "language": "Французский" },
+    { "original": "Пока", "translation": "Au revoir", "language": "Французский" },
+    { "original": "Спасибо", "translation": "Merci", "language": "Французский" },
+    { "original": "Конечно", "translation": "Bien sûr", "language": "Французский" },
+    { "original": "Удачи", "translation": "Bonne chance", "language": "Французский" },
+    { "original": "Время", "translation": "Temps", "language": "Французский" },
+    { "original": "Дом", "translation": "Maison", "language": "Французский" }
+  ]
+}
+

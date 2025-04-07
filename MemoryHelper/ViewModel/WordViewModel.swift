@@ -26,7 +26,6 @@ final class WordViewModel: WordsManaging {
     init(modelContext: ModelContext) {
         self.modelContext = modelContext
         fetchWords()
-        print(words[0].translation, words[1].translation,words[2].translation)
     }
     
     
@@ -45,31 +44,39 @@ final class WordViewModel: WordsManaging {
     
     //Загрузка первых слов для английского языка
     func preloadWords() {
-        let defaultWords = [
-            Word(original: "Семья", translation: "Family"),
-            Word(original: "Любовь", translation: "Love"),
-            Word(original: "Мама", translation: "Mom"),
-            Word(original: "Привет", translation: "Hello"),
-            Word(original: "Пока", translation: "Bye"),
-            Word(original: "Спасибо", translation: "Thank you"),
-            Word(original: "Конечно", translation: "Of course"),
-            Word(original: "Удачи", translation: "Good luck"),
-            Word(original: "Время", translation: "Time"),
-            Word(original: "Дом", translation: "Home"),
-            Word(original: "Холодильник", translation: "Fridge"),
-        ]
         
-        for word in defaultWords {
-            modelContext.insert(word)
+        guard let url = Bundle.main.url(forResource: "words", withExtension: "json") else {
+            print("error json read")
+            return
         }
         
         do {
+            let data = try Data(contentsOf: url)
+            let wordList = try JSONDecoder().decode(WordList.self, from: data)
+            
+            for word in wordList.english {
+                modelContext.insert(Word(original: word.original, translation: word.translation, language: "en"))
+            }
+            
+            for word in wordList.french {
+                modelContext.insert(Word(original: word.original, translation: word.translation, language: "fr"))
+            }
+            
+            for word in wordList.italian {
+                modelContext.insert(Word(original: word.original, translation: word.translation, language: "it"))
+            }
+            
             try modelContext.save()
+            
+            let descriptor = FetchDescriptor<Word>()
+            if let storedWords = try? modelContext.fetch(descriptor) {
+                words = storedWords
+            }
+            
         } catch {
-            print("Ошибка добавления начальных слов")
+            
         }
         
-        words = defaultWords
     }
     
     //Загрузка слов при запуске приложения на английском языке
@@ -103,8 +110,8 @@ final class WordViewModel: WordsManaging {
         words[index] = word
     }
     
-    func conditionForLockMenu() -> LockUnlockMenu {
-        words.count > 4 ? .unlock : .lock
+    func setTestWords(for language: Language) -> [Word] {
+        words.filter { $0.language == language.code }
     }
     
 }

@@ -6,9 +6,12 @@
 	<array>
 		<string>Arial Black.ttf</string>
 	</array>
-	<key>UIUserInterfaceStyle</key>
-	<string>Light</string>
-	<key>UILaunchStoryboardName</key>
-    <string>LaunchScreen</string>
+	<key>UILaunchScreen</key>
+	<dict>
+		<key>UIColorName</key>
+		<string>white</string>
+		<key>UIImageName</key>
+		<string>wordyLogo</string>
+	</dict>
 </dict>
 </plist>

@@ -2,9 +2,14 @@ import SwiftUI
 
 struct AllWordsView: View {
     @Bindable var viewModel: WordViewModel
+    @AppStorage("selectedLanguage") private var selectedLanguageRow: String = Language.english.rawValue
+    var selectedLanguage: Language {
+        get { Language(rawValue: selectedLanguageRow) ?? .english }
+        set { selectedLanguageRow = newValue.rawValue }
+    }
 
     var body: some View {
-        AllWordsListView(viewModel: AllWordsViewModel(wordsViewodel: viewModel))
+        AllWordsListView(viewModel: AllWordsViewModel(wordsViewodel: viewModel, selectedLanguage: selectedLanguage))
     }
 }
 
@@ -14,35 +19,42 @@ private struct AllWordsListView: View {
     @FocusState private var isFocused: Bool
     @Environment(\.dismiss) var dismiss
     @State private var isShowConfirmedDialog = false
+    @State private var isSheetOpen = false
     
     var body: some View {
         GeometryReader { geometry in
             let screenWidthSize = geometry.size.width
-            let rows = viewModel.arrangeWordsIntoRow(maxWidth: screenWidthSize - 5)
+            let rows = viewModel.arrangeWordsIntoRow(maxWidth: screenWidthSize - 15)
             ScrollView() {
-                VStack(alignment: .leading, spacing: 10) {
-                    ForEach(rows, id: \.self) { row in
-                        HStack(spacing: 10) {
-                            ForEach(row) { word in
-                                WordView(viewModel: viewModel, word: word, isEdit: $isEditing, screenWidth: screenWidthSize)
+                ZStack(alignment: .topLeading) {
+                    VStack(alignment: .leading, spacing: 10) {
+                        ForEach(rows, id: \.self) { row in
+                            HStack(spacing: 10) {
+                                ForEach(row) { word in
+                                    WordView(viewModel: viewModel, word: word, isEdit: $isEditing, screenWidth: screenWidthSize)
+                                }
                             }
                         }
                     }
-                    if viewModel.words.count < 50 {
-                        withAnimation {
-                            AddButton(viewModel: viewModel, isFocused: _isFocused, screenWidth: screenWidthSize)
-                                .opacity(isEditing ? 0 : 1)
-                                .disabled(isEditing)
-                                .padding(.trailing, 25)
-                        }
+                    //.padding(.top, 15)
+                    .padding(.leading, 30)
+                    .padding(.trailing, 16)
+                    
+                    if viewModel.words.isEmpty {
+                        Image(.arrow)
+                            .resizable()
+                            .frame(width: 120, height: 100)
+                            .padding(.leading)
+                            .offset(y: -80)
                     }
-              }
-                .padding(.top, 15)
-                .padding(.leading, 30)
-                .padding(.trailing, 16)
+                }
             }
             .scrollIndicators(.hidden)
         }
+        .sheet(isPresented: $isSheetOpen, content: {
+            AddNewWordView(viewModel: viewModel)
+                .presentationDetents([.height(300)])
+        })
         .frame(maxWidth: .infinity)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
@@ -55,24 +67,31 @@ private struct AllWordsListView: View {
                         }
                     } label: {
                         Image(systemName: viewModel.selectedWords.isEmpty ? (isEditing ? "checkmark" : "pencil") : "trash")
-                            .foregroundStyle(.mainGreen)
+                            .foregroundStyle(.mainViolet)
                     }
-                }
-            }
-            
-            ToolbarItem(placement: .topBarLeading) {
-                Button {
-                    dismiss()
-                } label: {
-                    HStack(spacing: 0) {
-                        Image(systemName: "chevron.left")
-                        Text("Назад")
-                            .font(.custom("Arial", size: 20))
-                    }
-                    .foregroundStyle(.mainGreen)
                 }
 
             }
+            
+            ToolbarItem(placement: .principal) {
+                Image(.eyes)
+                    .resizable()
+                    .frame(width: 100, height: 100)
+            }
+            
+            ToolbarItem(placement: .topBarLeading) {
+                if viewModel.words.count < 50 {
+                        Button {
+                            isSheetOpen = true
+                        } label: {
+                            Image(systemName: "plus.square")
+                                .foregroundStyle(.mainViolet)
+                        }
+                        .opacity(isEditing ? 0 : 1)
+                        .disabled(isEditing)
+                    }
+            }
+
         }
         .alert("Удалить выбранные слова", isPresented: $isShowConfirmedDialog, actions: {
             Button("Да", role: .destructive) {
@@ -156,42 +175,59 @@ private struct DeleteButton: View {
     }
 }
 
-private struct AddButton: View {
+
+private struct AddNewWordView: View {
+    
+    @Environment(\.dismiss) var dismiss
     @Bindable var viewModel: AllWordsViewModel
-    @State var editing: Bool = false
+    @State private var isEditing = false
     @FocusState var isFocused: Bool
-    let screenWidth: CGFloat
     
     var body: some View {
-        if viewModel.isAddingNewWord == true {
-            HStack(alignment: .top) {
-                DesignTextField(text: $viewModel.newWord, editing: $editing)
-                    .onSubmit {
-                        viewModel.addNewWord(viewModel.newWord)
-                    }
-                    .padding(.trailing, 10)
+        NavigationStack {
+            VStack(spacing: 0) {
+                DesignTextField(text: $viewModel.newWord, editing: $isEditing)
                     .focused($isFocused)
+                
                 Button {
-                    viewModel.addNewWord(viewModel.newWord)
-                    isFocused = false
+                    if viewModel.newWord != "" {
+                        viewModel.addNewWord(viewModel.newWord)
+                        dismiss()
+                    }
                 } label: {
-                    Image(systemName: "checkmark")
-                        .resizable()
-                        .frame(width: 20, height: 20)
+                    Text("ДОБАВИТЬ")
+                        .wordTextModifier(color: .mainViolet)
                 }
                 .padding(.top, 10)
-                .foregroundStyle(.mainViolet)
+
             }
-        } else {
-            Button(action: {
-                viewModel.isAddingNewWord = true
-                isFocused = true
-            }) {
-                Text("+ Добавить слово")
-                    .foregroundStyle(.white)
-                    .customWordView(screenWidth: screenWidth, color: .mainViolet)
+            .onTapGesture {
+                isFocused = false
+            }
+            .padding()
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button {
+                        dismiss()
+                    } label: {
+                        Image(systemName: "chevron.left")
+                            .foregroundStyle(.mainViolet)
+                    }
+                }
+                
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        if viewModel.newWord != "" {
+                            viewModel.addNewWord(viewModel.newWord)
+                            dismiss()
+                        }
+                    } label: {
+                        Image(systemName: "plus")
+                            .foregroundStyle(.mainViolet)
+                    }
+
+                }
             }
         }
-        
     }
 }

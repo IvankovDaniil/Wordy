@@ -13,6 +13,8 @@ struct ChooseRightTranslateView: View {
     @State private var randomBool = Bool.random()
     @State private var selectedWord: Word?
     @State var testWords: [Word] = []
+    //@Binding var path: NavigationPath
+    
     
     var body: some View {
         VStack(spacing: 20) {
@@ -67,15 +69,17 @@ struct ChooseRightTranslateView: View {
             
             NextTestButtonView(selectedWord: $selectedWord, isRightWord: $testViewModel.isRightWord, action: {
                 testViewModel.nextTest()
+//                path.append(testViewModel.currentType)
             })
             .transition(.opacity)
             .opacity(testViewModel.isRightWord ? 1 : 0)
             .clipped()
         }
+        .padding(.top, 32)
         .frame(height: 500)
         .frame(maxHeight: .infinity)
         .padding()
-        .contentShape(Rectangle())
+//        .contentShape(Rectangle())
         .onAppear {
             self.testWords = self.testViewModel.randomWords(rightWord: word)
         }
