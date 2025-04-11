@@ -2,3 +2,4 @@ MemoryHelper/Configurations
 MemoryHelper/Configurations
 MemoryHelper/Configurations/YandexAPI.xcconfig
 MemoryHelper/Configurations/Secrets.swift
+*.xcodeproj
