@@ -10,6 +10,24 @@ import Foundation
 enum NetworkError: Error {
     case badURL
     case badRequest
+    case unknown
+    case noInternet
+    case decodingError
+    
+    var errorDesription: String {
+        switch self {
+        case .badURL:
+            "Неверный URL"
+        case .badRequest:
+            "Ошибка запроса"
+        case .unknown:
+            "Неизвестная ошибка"
+        case .noInternet:
+            "Нет подключения к интернету"
+        case .decodingError:
+            "Ошибка в получении данных"
+        }
+    }
 }
 
 final class Networking {
@@ -24,12 +42,10 @@ final class Networking {
             throw NetworkError.badURL
         }
         
-        print("\(apiKey)")
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("Api-Key \(apiKey)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-        
         
         let httpBody: [String : Any] = [
             "sourceLanguageCode": sourceLanguaggeCode ,
@@ -39,15 +55,28 @@ final class Networking {
         
         request.httpBody = try JSONSerialization.data(withJSONObject: httpBody)
         
-        let (data, response) = try await URLSession.shared.data(for: request)
-        
-        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-            throw NetworkError.badRequest
+        do {
+            let (data, response) = try await URLSession.shared.data(for: request)
+            
+            guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+                throw NetworkError.badRequest
+            }
+            
+            do {
+                let decodedResponse = try JSONDecoder().decode(TranslationResponse.self, from: data)
+                return decodedResponse.translations.first?.text ?? "Ошибка"
+            } catch {
+                throw NetworkError.decodingError
+            }
+
+        } catch {
+            if let urlError = error as? URLError, urlError.code == .notConnectedToInternet {
+                throw NetworkError.noInternet
+            } else {
+                throw NetworkError.unknown
+            }
         }
-        
-        
-        let decodedResponse = try JSONDecoder().decode(TranslationResponse.self, from: data)
-        return decodedResponse.translations.first?.text ?? "Ошибка"
+
     }
     
     func findLanguageCode(_ word: String, _ languageCode: String) async throws -> String {
@@ -68,14 +97,19 @@ final class Networking {
         
         request.httpBody = try JSONSerialization.data(withJSONObject: httpBody)
         
-        let (data, response) = try await URLSession.shared.data(for: request)
-        
-        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
-            throw NetworkError.badRequest
+        do {
+            let (data, response) = try await URLSession.shared.data(for: request)
+            
+            guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+                throw NetworkError.badRequest
+            }
+            
+            let decodeResponse = try JSONDecoder().decode(DetectedCode.self, from: data)
+            return decodeResponse.languageCode
+        } catch {
+            throw NetworkError.noInternet
         }
-        
-        let decodeResponse = try JSONDecoder().decode(DetectedCode.self, from: data)
-        return decodeResponse.languageCode
+
     }
 }
 

@@ -11,20 +11,22 @@ import SwiftUI
 
 @Observable
 final class AllWordsViewModel {
-    var wordsViewodel: WordsManaging
+    var wordsViewModel: WordsManaging
     private var networking = Networking()
     var newWord: String = ""
     let selectedLanguage: Language
     
+    var errorMessage: String?
+    
     var selectedWords = [Word]()
     
     init(wordsViewodel: WordViewModel, selectedLanguage: Language) {
-        self.wordsViewodel = wordsViewodel
+        self.wordsViewModel = wordsViewodel
         self.selectedLanguage = selectedLanguage
     }
     
     var words: [Word] {
-        wordsViewodel.words.filter { $0.language == selectedLanguage.code }
+        wordsViewModel.words.filter { $0.language == selectedLanguage.code }
     }
     
     //Расчет максимальной длины слова
@@ -66,6 +68,7 @@ final class AllWordsViewModel {
     
     //Добавление нового слова
     func addNewWord(_ word: String) {
+        errorMessage = ""
         
         let newFilteredWordWord = filterWord(word)
         
@@ -78,7 +81,7 @@ final class AllWordsViewModel {
         }
         
         let placeholder = Word(original: "\(newFilteredWordWord)", translation: "Переводим...", language: selectedLanguage.code)
-        wordsViewodel.addWord(placeholder)
+        wordsViewModel.addWord(placeholder)
         
         Task {
             do {
@@ -97,11 +100,15 @@ final class AllWordsViewModel {
                     language: selectedLanguage.code
                 )
                 
-                if let index = wordsViewodel.words.firstIndex(where: { $0.translation == "Переводим..." }) {
-                    wordsViewodel.updateWord(at: index, with: newWord)
+                if let index = wordsViewModel.words.firstIndex(where: { $0.translation == "Переводим..." }) {
+                    wordsViewModel.updateWord(at: index, with: newWord)
                 }
-            } catch {
-                print("Error \(error)")
+            } catch let error as NetworkError {
+                errorMessage = error.errorDesription
+                wordsViewModel.deleteWordWithError(placeholder)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
+                    self.errorMessage = nil
+                }
             }
         }
         
@@ -128,7 +135,7 @@ final class AllWordsViewModel {
         guard !selectedWords.isEmpty else { return }
         
         withAnimation {
-            wordsViewodel.deleteWords(selectedWords)
+            wordsViewModel.deleteWords(selectedWords)
             selectedWords.removeAll()
         }
     }

@@ -20,7 +20,6 @@ class AudioPlayer {
     
     func makeSound(name: String,withExtensions: String) {
         print("MY LOG: isEnable =", isEnable)
-        print("API Key from Info.plist:", Bundle.main.infoDictionary?["YANDEX_API_KEY"] ?? "nil")
         guard isEnable else {
             print("MY LOG: sound is disabled in settings")
             return

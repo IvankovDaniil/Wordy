@@ -50,6 +50,18 @@ private struct AllWordsListView: View {
             }
             .scrollIndicators(.hidden)
         }
+        .overlay(alignment: .top, content: {
+            if let error = viewModel.errorMessage {
+                Text(error)
+                    .font(.custom("Arial Black", size: 16))
+                    .foregroundStyle(.white)
+                    .padding()
+                    .background(Color(.black).opacity(0.5))
+                    .clipShape(.rect(cornerRadius: 12))
+                    .opacity(error.isEmpty ? 0 : 1)
+                    
+            }
+        })
         .sheet(isPresented: $isSheetOpen, content: {
             AddNewWordView(viewModel: viewModel)
                 .presentationDetents([.height(300)])

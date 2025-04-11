@@ -13,6 +13,7 @@ protocol WordsManaging: AnyObject {
     func addWord(_ word: Word)
     func deleteWords(_ word: [Word])
     func updateWord(at index: Int, with word: Word)
+    func deleteWordWithError(_ word: Word)
 }
 
 @Observable
@@ -99,6 +100,17 @@ final class WordViewModel: WordsManaging {
             fetchWords()
         } catch {
             print("Error with adding words")
+        }
+    }
+    
+    func deleteWordWithError(_ word: Word) {
+        modelContext.delete(word)
+        
+        do {
+            try modelContext.save()
+            fetchWords()
+        } catch {
+            
         }
     }
     
