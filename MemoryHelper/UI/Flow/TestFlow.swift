@@ -16,7 +16,6 @@ struct TestFlow: View {
      
     init(words: [Word]) {
         self.words = words
-        print("MY LOG: testFLOW initiated")
     }
     
     
@@ -25,11 +24,14 @@ struct TestFlow: View {
             StartsTestView(testViewModel: $testViewModel, words: words) {
                 isPresenting = true
             }
+            
             .fullScreenCover(isPresented: $isPresenting, content: {
                 NavigationStack() {
                     TestView(testViewModel: $testViewModel)
                 }
             })
+
+            
         }
     }
 }

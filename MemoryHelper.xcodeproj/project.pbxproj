@@ -259,6 +259,8 @@
 		};
 		D018D7362D68E4DE00F29342 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = D018D7292D68E4DD00F29342 /* MemoryHelper */;
+			baseConfigurationReferenceRelativePath = Configurations/YandexAPI.xcconfig;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -294,6 +296,8 @@
 		};
 		D018D7372D68E4DE00F29342 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReferenceAnchor = D018D7292D68E4DD00F29342 /* MemoryHelper */;
+			baseConfigurationReferenceRelativePath = Configurations/YandexAPI.xcconfig;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;

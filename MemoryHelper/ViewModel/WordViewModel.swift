@@ -11,7 +11,7 @@ import SwiftData
 protocol WordsManaging: AnyObject {
     var words: [Word] { get }
     func addWord(_ word: Word)
-    func deleteWord(_ word: [Word])
+    func deleteWords(_ word: [Word])
     func updateWord(at index: Int, with word: Word)
 }
 
@@ -93,12 +93,26 @@ final class WordViewModel: WordsManaging {
     }
 
     func addWord(_ word: Word) {
-        words.append(word)
+        modelContext.insert(word)
+        do {
+            try modelContext.save()
+            fetchWords()
+        } catch {
+            print("Error with adding words")
+        }
     }
     
-    func deleteWord(_ words: [Word]) {
-        self.words.removeAll { word in
-            words.contains(where: { $0.id == word.id })
+    func deleteWords(_ words: [Word]) {
+        
+        for word in words {
+            modelContext.delete(word)
+        }
+        
+        do {
+            try modelContext.save()
+            fetchWords()
+        } catch {
+            print("Error with deleting words")
         }
     }
     
@@ -107,7 +121,16 @@ final class WordViewModel: WordsManaging {
             return
         }
         
-        words[index] = word
+        words[index].translation = word.translation
+        words[index].original = word.original
+        
+        do {
+            try modelContext.save()
+            fetchWords()
+        } catch {
+            print("Error with update word")
+        }
+        
     }
     
     func setTestWords(for language: Language) -> [Word] {

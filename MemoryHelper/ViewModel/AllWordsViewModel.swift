@@ -128,7 +128,7 @@ final class AllWordsViewModel {
         guard !selectedWords.isEmpty else { return }
         
         withAnimation {
-            wordsViewodel.deleteWord(selectedWords)
+            wordsViewodel.deleteWords(selectedWords)
             selectedWords.removeAll()
         }
     }

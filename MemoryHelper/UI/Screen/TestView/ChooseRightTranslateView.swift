@@ -14,6 +14,7 @@ struct ChooseRightTranslateView: View {
     @State private var selectedWord: Word?
     @State var testWords: [Word] = []
     //@Binding var path: NavigationPath
+    let audioPlayer = AudioPlayer()
     
     
     var body: some View {
@@ -33,14 +34,14 @@ struct ChooseRightTranslateView: View {
                 HStack(spacing: 15) {
                     ForEach(testWords) { testWord in
                         Button(action: {
-                            let generator = UINotificationFeedbackGenerator()
-                            generator.prepare()
                             selectedWord = testWord
                             if selectedWord == self.word {
                                 testViewModel.isRightWord = true
-                                generator.notificationOccurred(.success)
+                                Haptic.notify(.success)
+                                audioPlayer.makeSound(name: "success", withExtensions: "wav")
                             } else {
-                                generator.notificationOccurred(.error)
+                                Haptic.notify(.error)
+                                audioPlayer.makeSound(name: "wrong", withExtensions: "mp3")
                                 DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
                                     selectedWord = nil
                                 }

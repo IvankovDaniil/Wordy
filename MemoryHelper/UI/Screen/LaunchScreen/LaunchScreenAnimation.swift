@@ -18,28 +18,7 @@ struct LaunchScreenAnimation: View {
     }
 }
 
-class AudioPlayer {
-    var audioPlayer: AVAudioPlayer?
-    
-    deinit {
-        print("MY LOG: audioPlayer deinin")
-    }
-    
-    func makeSound() {
-        guard let sound = Bundle.main.url(forResource: "launchScreenSound", withExtension: "wav") else {
-            print("error with soudn launchScreen")
-            return
-        }
-        
-        do {
-            audioPlayer = try AVAudioPlayer(contentsOf: sound)
-            audioPlayer?.play()
-        } catch {
-            print("Erorr with playing sound")
-        }
-    }
-    
-}
+
 
 struct VideoBackgroundView: UIViewControllerRepresentable {
     let videoName: String
@@ -62,9 +41,7 @@ struct VideoBackgroundView: UIViewControllerRepresentable {
         
         // Запускаем видео и звук
         player.play()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            audioPlayer.makeSound()
-        }
+        audioPlayer.makeSound(name: "launchScreenSound", withExtensions: "mp3")
 
         return controller
     }

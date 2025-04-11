@@ -11,6 +11,10 @@ struct StartsTestView: View {
     @Binding var testViewModel: TestViewModel?
     let words: [Word]
     var action: () -> Void
+    
+    var isTestAviable: Bool {
+        words.count >= 5
+    }
         
     @State var isShowMessage: Bool = false
     
@@ -34,29 +38,28 @@ struct StartsTestView: View {
                 ZStack {
 
                     Button {
-                        testViewModel = TestViewModel(words: words)
-                        action()
+                        if isTestAviable {
+                            testViewModel = TestViewModel(words: words)
+                            action()
+                            Haptic.notify(.success)
+                        } else {
+                            isShowMessage = true
+                            
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
+                                isShowMessage = false
+                            }
+                        }
+
                     } label: {
                         Text("НАЧАТЬ ТЕСТ")
                             .wordTextModifier(color: .mainViolet)
                             .opacity(words.count < 5 ? 0.3 : 1.0)
                    }
-                    .disabled(words.count < 5)
-                    if words.count < 5 {
+                    if !isTestAviable {
                         Image(systemName: "lock.circle.fill")
                             .resizable()
                             .frame(width: 30, height: 30)
                             .foregroundStyle(.black)
-                    }
-                }
-                .onTapGesture {
-                    if words.count < 5 {
-                        print("My Log: ONTAPGEST ON StartsTestView has tapped")
-                        isShowMessage = true
-                        
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-                            isShowMessage = false
-                        }
                     }
                 }
                 .overlay {
@@ -75,8 +78,9 @@ struct StartsTestView: View {
                 }
             }
         }
-
+        .ignoresSafeArea(.all)
         .padding(.horizontal)
+        .padding(.bottom, 150)
     }
 }
 

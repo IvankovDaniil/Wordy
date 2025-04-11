@@ -7,6 +7,7 @@
 import SwiftUI
 
 struct AcceptButtonView: View {
+    let audioPlayer = AudioPlayer()
     @Bindable var testViewModel: TestViewModel
     let word: Word
     
@@ -23,8 +24,6 @@ struct AcceptButtonView: View {
                 .keyboardType(.asciiCapable)
             
             Button {
-                let generator = UINotificationFeedbackGenerator()
-                generator.prepare()
                 
                 if testViewModel.isRightWord {
                     testViewModel.isRightWord = false
@@ -35,9 +34,11 @@ struct AcceptButtonView: View {
                     print("MY LOG: До метода: ", word.translation)
                     testViewModel.freeInputWordCheck(word: wordInput)
                     if testViewModel.isRightWord {
-                        generator.notificationOccurred(.success)
+                        audioPlayer.makeSound(name: "success", withExtensions: "wav")
+                        Haptic.notify(.success)
                     } else {
-                        generator.notificationOccurred(.error)
+                        Haptic.notify(.error)
+                        audioPlayer.makeSound(name: "wrong", withExtensions: "mp3")
                     }
                     print("MY LOG: после: ", word.translation)
                     isFocused = false

@@ -14,9 +14,9 @@ enum NetworkError: Error {
 
 final class Networking {
     private let baseURL: URL? = URL(string: "https://translate.api.cloud.yandex.net/translate/v2/translate")
-    private let apiKey = "AQVN0pISHwA4WHj0aWMZ6VZFtFhGVWhWHxrq05mh"
+    private let apiKey = YandexAPI.apiKey
     private let detectCodeURL: URL? = URL(string: "https://translate.api.cloud.yandex.net/translate/v2/detect")
-    private let idFolder = "b1g6d27r279k56i0vs93"
+    private let idFolder = YandexAPI.idFolder
     
     func translateWordWithAPI(_ word: String, _ sourceLanguaggeCode: String, _ targetLanguageCode: String) async throws -> String {
         
@@ -24,6 +24,7 @@ final class Networking {
             throw NetworkError.badURL
         }
         
+        print("\(apiKey)")
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("Api-Key \(apiKey)", forHTTPHeaderField: "Authorization")

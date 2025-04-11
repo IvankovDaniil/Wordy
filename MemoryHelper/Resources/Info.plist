@@ -13,5 +13,9 @@
 		<key>UIImageName</key>
 		<string>wordyLogo</string>
 	</dict>
+	<key>YANDEX_API_KEY</key>
+	<string>$(YANDEX_API_KEY)</string>
+	<key>ID_FOLDER</key>
+	<string>$(ID_FOLDER)</string>
 </dict>
 </plist>

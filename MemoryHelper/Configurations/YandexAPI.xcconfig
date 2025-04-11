@@ -1,0 +1,9 @@
+//
+//  YandexAPI.xcconfig
+//  MemoryHelper
+//
+//  Created by Даниил Иваньков on 10.04.2025.
+//
+
+YANDEX_API_KEY = AQVN0pISHwA4WHj0aWMZ6VZFtFhGVWhWHxrq05mh
+ID_FOLDER = b1g6d27r279k56i0vs93

@@ -37,6 +37,7 @@ struct ListeningTestView: View {
             AcceptButtonView(testViewModel: testViewModel, word: word)
                 .focused($isFocused)
         }
+        .padding(.top, 5)
         .frame(height: 500)
         .frame(maxHeight: .infinity)
         .padding()

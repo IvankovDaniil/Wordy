@@ -13,8 +13,9 @@ struct SettingsView: View {
         get { Language(rawValue: selectedLanguageRaw) ?? .english }
         set { selectedLanguageRaw = newValue.rawValue }
     }
-    @State var isVibro: Bool = true
-    @State var isMuteOff: Bool = true
+    
+    @AppStorage("isHapticsEnable") var isVibro: Bool = true
+    @AppStorage("isMusicEnable") var isMusicEnable: Bool = true
     
     var body: some View {
         ScrollView {
@@ -57,7 +58,17 @@ struct SettingsView: View {
                 
                 VStack {
                     Toggle("Вибрация", isOn: $isVibro)
-                    Toggle("Звуки", isOn: $isMuteOff)
+//                        .onChange(of: isVibro) { newValue, _ in
+//                            print("MY LOG: User toggled music to", newValue)
+//                            UserDefaults.standard.set(newValue, forKey: "isHapticsEnable")
+//                            UserDefaults.standard.synchronize()
+//                        }
+                    Toggle("Звуки", isOn: $isMusicEnable)
+//                        .onChange(of: isMusicEnable) { newValue, _ in
+//                            print("MY LOG: User toggled music to", newValue)
+//                            UserDefaults.standard.set(newValue, forKey: "isMusicEnable")
+//                            UserDefaults.standard.synchronize()
+//                        }
                 }
                 .toggleStyle(.switch)
                 .tint(.mainViolet)

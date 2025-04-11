@@ -36,7 +36,6 @@ private struct AllWordsListView: View {
                             }
                         }
                     }
-                    //.padding(.top, 15)
                     .padding(.leading, 30)
                     .padding(.trailing, 16)
                     
@@ -62,8 +61,10 @@ private struct AllWordsListView: View {
                     Button {
                         if viewModel.selectedWords.isEmpty {
                             isEditing.toggle()
+                            Haptic.notify(.success)
                         } else {
                             isShowConfirmedDialog = true
+                            Haptic.notify(.success)
                         }
                     } label: {
                         Image(systemName: viewModel.selectedWords.isEmpty ? (isEditing ? "checkmark" : "pencil") : "trash")
@@ -82,6 +83,7 @@ private struct AllWordsListView: View {
             ToolbarItem(placement: .topBarLeading) {
                 if viewModel.words.count < 50 {
                         Button {
+                            Haptic.notify(.success)
                             isSheetOpen = true
                         } label: {
                             Image(systemName: "plus.square")
@@ -96,11 +98,14 @@ private struct AllWordsListView: View {
         .alert("Удалить выбранные слова", isPresented: $isShowConfirmedDialog, actions: {
             Button("Да", role: .destructive) {
                 withAnimation(.easeInOut(duration: 0.2)) {
+                    Haptic.notify(.success)
                     isEditing = false
                     viewModel.deleteWord()
                 }
             }
-            Button("Нет", role: .cancel) {  }
+            Button("Нет", role: .cancel) {
+                Haptic.notify(.warning)
+            }
         })
         .navigationBarBackButtonHidden(true)
         .onTapGesture {
@@ -108,6 +113,7 @@ private struct AllWordsListView: View {
         }
         .onLongPressGesture {
             isEditing.toggle()
+            Haptic.notify(.success)
         }
 
     }
@@ -135,6 +141,7 @@ private struct WordView: View {
                 .onTapGesture {
                     withAnimation {
                         showTranslation.toggle()
+                        Haptic.notify(.success)
                     }
                 }
                 .rotationEffect(.degrees(isEdit ? 2 : 0))
@@ -193,6 +200,9 @@ private struct AddNewWordView: View {
                     if viewModel.newWord != "" {
                         viewModel.addNewWord(viewModel.newWord)
                         dismiss()
+                        Haptic.notify(.success)
+                    } else {
+                        Haptic.notify(.warning)
                     }
                 } label: {
                     Text("ДОБАВИТЬ")
@@ -208,6 +218,7 @@ private struct AddNewWordView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button {
+                        Haptic.notify(.success)
                         dismiss()
                     } label: {
                         Image(systemName: "chevron.left")
@@ -218,8 +229,11 @@ private struct AddNewWordView: View {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
                         if viewModel.newWord != "" {
+                            Haptic.notify(.success)
                             viewModel.addNewWord(viewModel.newWord)
                             dismiss()
+                        } else {
+                            Haptic.notify(.warning)
                         }
                     } label: {
                         Image(systemName: "plus")

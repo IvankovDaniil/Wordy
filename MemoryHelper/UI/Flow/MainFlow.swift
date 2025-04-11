@@ -33,15 +33,15 @@ struct MainFlow: View {
     var body: some View {
         VStack(spacing: 0) {
             ZStack(alignment: .bottom) {
-                switch currentTab {
-                case .allWords:
+                Group {
                     AllWordsFlow(viewModel: viewModel)
-                case .test:
+                        .opacity(currentTab == .allWords ? 1 : 0)
                     TestFlow(words: viewModel.setTestWords(for: selectedLanguage))
-                case .settings:
+                        .opacity(currentTab == .test ? 1 : 0)
                     SettingsView()
+                        .opacity(currentTab == .settings ? 1 : 0)
                 }
-                
+                .animation(nil, value: currentTab)
                 TabBarLabel(buttons: buttons, currentTab: $currentTab)
                     .padding(.top, 10)
                     .background {
@@ -50,12 +50,7 @@ struct MainFlow: View {
                     }
             }
         }
-        .onAppear {
-            let appearance = UITabBarAppearance()
-            appearance.configureWithTransparentBackground()
-            UITabBar.appearance().standardAppearance = appearance
-            UITabBar.appearance().scrollEdgeAppearance = appearance
-        }
+
     }
 }
 
@@ -127,7 +122,7 @@ private struct TabBarButtons: View {
                     .padding(.top, 5)
                 
                 Text(config.title)
-                    .font(.custom("Arial Black", size: 10))
+                    .font(.custom("Arial Black", size: 11))
                     .foregroundColor(isSelected ? .white : .mainViolet)
                     .padding(.bottom, 5)
             }
