@@ -17,6 +17,7 @@ final class AllWordsViewModel {
     let selectedLanguage: Language
     
     var errorMessage: String?
+    var showErrorMessage: Bool = false
     
     var selectedWords = [Word]()
     
@@ -68,8 +69,6 @@ final class AllWordsViewModel {
     
     //Добавление нового слова
     func addNewWord(_ word: String) {
-        errorMessage = ""
-        
         let newFilteredWordWord = filterWord(word)
         
         guard newFilteredWordWord != "" else {
@@ -104,11 +103,15 @@ final class AllWordsViewModel {
                     wordsViewModel.updateWord(at: index, with: newWord)
                 }
             } catch let error as NetworkError {
-                errorMessage = error.errorDesription
-                wordsViewModel.deleteWordWithError(placeholder)
-                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                    self.errorMessage = nil
+                
+                let errorDesription = error.errorDesription
+                
+                DispatchQueue.main.async {
+                    NotificationCenter.default.post(name: .displayError, object: nil, userInfo: ["error": errorDesription])
                 }
+                
+                Haptic.notify(.error)
+                wordsViewModel.deleteWordWithError(placeholder)
             }
         }
         
@@ -140,4 +143,9 @@ final class AllWordsViewModel {
         }
     }
     
+}
+
+
+extension Notification.Name {
+    static let displayError = Notification.Name("displayError")
 }

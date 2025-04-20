@@ -58,17 +58,7 @@ struct SettingsView: View {
                 
                 VStack {
                     Toggle("Вибрация", isOn: $isVibro)
-//                        .onChange(of: isVibro) { newValue, _ in
-//                            print("MY LOG: User toggled music to", newValue)
-//                            UserDefaults.standard.set(newValue, forKey: "isHapticsEnable")
-//                            UserDefaults.standard.synchronize()
-//                        }
                     Toggle("Звуки", isOn: $isMusicEnable)
-//                        .onChange(of: isMusicEnable) { newValue, _ in
-//                            print("MY LOG: User toggled music to", newValue)
-//                            UserDefaults.standard.set(newValue, forKey: "isMusicEnable")
-//                            UserDefaults.standard.synchronize()
-//                        }
                 }
                 .toggleStyle(.switch)
                 .tint(.mainViolet)

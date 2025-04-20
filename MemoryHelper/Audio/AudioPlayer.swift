@@ -19,7 +19,6 @@ class AudioPlayer {
     }
     
     func makeSound(name: String,withExtensions: String) {
-        print("MY LOG: isEnable =", isEnable)
         guard isEnable else {
             print("MY LOG: sound is disabled in settings")
             return

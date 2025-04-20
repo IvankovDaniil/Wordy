@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import TipKit
 
 @main
 struct MemoryHelperApp: App {
@@ -22,14 +23,13 @@ struct MemoryHelperApp: App {
     init() {
         let context = sharedModelContainer.mainContext
         _viewModel = State(wrappedValue: WordViewModel(modelContext: context))
+        try? Tips.resetDatastore()
+        try? Tips.configure()
     }
     
     var body: some Scene {
         WindowGroup {
             ZStack {
-                MainFlow(viewModel: viewModel)
-                    .opacity(isShowLaunchScreen ? 0 : 1)
-                
                 if isShowLaunchScreen {
                     LaunchScreenAnimation()
                         .transition(.opacity)
@@ -40,6 +40,10 @@ struct MemoryHelperApp: App {
                                 }
                             }
                         }
+                }
+                else {
+                    MainFlow(viewModel: viewModel)
+                        .opacity(isShowLaunchScreen ? 0 : 1)
                 }
             }
         }

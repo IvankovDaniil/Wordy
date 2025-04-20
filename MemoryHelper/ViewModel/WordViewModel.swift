@@ -149,4 +149,28 @@ final class WordViewModel: WordsManaging {
         words.filter { $0.language == language.code }
     }
     
+    func switchToNextLanguage(language: Language) -> Language {
+        
+        switch language {
+            
+        case .english:
+                .italian
+        case .italian:
+                .french
+        case .french:
+                .english
+        }
+    }
+    
+    func switchToPreviousLanguage(language: Language) -> Language {
+        switch language {
+        case .english:
+                .french
+        case .french:
+                .italian
+        case .italian:
+                .english
+        }
+    }
+    
 }

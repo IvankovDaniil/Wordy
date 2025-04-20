@@ -28,7 +28,7 @@ struct WordTextModifier: ViewModifier {
             .font(.custom("Arial Black", size: 22))
             .foregroundStyle(.white)
             .padding()
-            .frame(maxWidth: .infinity, maxHeight: 60)
+            .frame(maxWidth: .infinity, minHeight: 60)
             .background(color)
             .cornerRadius(12)
             .shadow(radius: 5)

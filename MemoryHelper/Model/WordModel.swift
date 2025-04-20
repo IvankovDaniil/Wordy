@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftData
+import SwiftUI
 
 enum Language: String, Codable, CaseIterable {
     case english = "Английский"
@@ -21,6 +22,17 @@ enum Language: String, Codable, CaseIterable {
             "it"
         case .french:
             "fr"
+        }
+    }
+    
+    var flag: ImageResource {
+        switch self {
+        case .english:
+                .ukFlag
+        case .italian:
+                .itFlag
+        case .french:
+                .frFlag
         }
     }
 }
