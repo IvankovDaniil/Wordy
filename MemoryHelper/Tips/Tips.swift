@@ -23,10 +23,14 @@ struct AddNewWordTip: Tip {
     var image: Image? {
         Image(systemName: "hand.point.up.fill")
     }
+    
+    var options: [TipOption] {
+        [Tip.MaxDisplayCount(1)]
+    }
 }
 
 
-struct DeleteWordsTip: Tip {
+struct DeleteWordsTip: Tip { 
     var title: Text {
         Text("Удалить слово")
             .font(.custom("Arial Black", size: 18))
@@ -40,5 +44,9 @@ struct DeleteWordsTip: Tip {
     
     var image: Image? {
         Image(systemName: "trash")
+    }
+    
+    var options: [TipOption] {
+        [Tip.MaxDisplayCount(1)]
     }
 }

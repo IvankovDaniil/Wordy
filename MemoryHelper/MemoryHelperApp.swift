@@ -23,7 +23,6 @@ struct MemoryHelperApp: App {
     init() {
         let context = sharedModelContainer.mainContext
         _viewModel = State(wrappedValue: WordViewModel(modelContext: context))
-        try? Tips.resetDatastore()
         try? Tips.configure()
     }
     

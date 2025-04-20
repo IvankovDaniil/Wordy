@@ -44,6 +44,7 @@ private struct AllWordsListView: View {
                           isEditing: $isEditing,
                           viewModel: viewModel)
         }
+        .padding(.bottom, 70)
         .overlay(alignment: .top) {
             if showErrorMessage, let errorMessage = errorMessage {
                 ToastView(message: errorMessage)
@@ -81,9 +82,9 @@ private struct AllWordsListView: View {
                 Haptic.notify(.warning)
             }
         })
-        .navigationBarBackButtonHidden(true)
         .onTapGesture {
-            isFocused = false
+            addNewWordTip.invalidate(reason: .actionPerformed)
+            deleteWordsTip.invalidate(reason: .actionPerformed)
         }
         .onLongPressGesture {
             isEditing.toggle()
@@ -113,7 +114,7 @@ private struct AllWordsListView: View {
                         Image(systemName: viewModel.selectedWords.isEmpty ? (isEditing ? "checkmark" : "pencil") : "trash")
                             .foregroundStyle(.mainViolet)
                     }
-                    .popoverTip(deleteWordsTip)
+                    .popoverTip(deleteWordsTip, arrowEdge: .top)
                     .tipImageStyle(.mainViolet)
                 }
                 
@@ -134,7 +135,7 @@ private struct AllWordsListView: View {
                         Image(systemName: "plus.square")
                             .foregroundStyle(.mainViolet)
                     }
-                    .popoverTip(addNewWordTip)
+                    .popoverTip(addNewWordTip, arrowEdge: .top)
                     .tipImageStyle(.mainGreen)
                     .opacity(isEditing ? 0 : 1)
                     .disabled(isEditing)
