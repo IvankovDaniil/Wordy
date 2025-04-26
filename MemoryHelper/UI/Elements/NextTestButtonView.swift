@@ -21,7 +21,6 @@ struct NextTestButtonView: View {
         VStack(spacing: 0) {
             Button("Следующее слово") {
                 withAnimation {
-                    print("MY LOG: NextTestButton pressed")
                     selectedWord = nil
                     isRightWord = false
                     action()

@@ -32,7 +32,6 @@ final class TestViewModel: Equatable {
     init(words: [Word]) {
         self.words = words
         self.setup()
-        print("MY LOG: testViewModel initiate")
     }
     
     func setup() {
@@ -56,7 +55,6 @@ final class TestViewModel: Equatable {
     
     func loadNextTest() {
         let newWord = testWord[currentIndex].word
-        print("MY LOG: Старое слово: \(currentWord?.original ?? "nil") -> Новое слово: \(newWord.original)")
         
         currentType = testWord[currentIndex].test
         currentWord = newWord
@@ -95,7 +93,6 @@ final class TestViewModel: Equatable {
             .lowercased()
             .folding(options: .diacriticInsensitive, locale: nil)
         
-        print(cleanedWord, currentWord.translation)
         
         isValid = true
         

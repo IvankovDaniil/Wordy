@@ -27,6 +27,7 @@ struct AddNewWordTip: Tip {
     var options: [TipOption] {
         [Tip.MaxDisplayCount(1)]
     }
+
 }
 
 
@@ -50,3 +51,5 @@ struct DeleteWordsTip: Tip {
         [Tip.MaxDisplayCount(1)]
     }
 }
+
+

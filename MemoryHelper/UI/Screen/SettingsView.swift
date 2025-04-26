@@ -13,6 +13,7 @@ struct SettingsView: View {
         get { Language(rawValue: selectedLanguageRaw) ?? .english }
         set { selectedLanguageRaw = newValue.rawValue }
     }
+    let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
     
     @AppStorage("isHapticsEnable") var isVibro: Bool = true
     @AppStorage("isMusicEnable") var isMusicEnable: Bool = true
@@ -27,7 +28,7 @@ struct SettingsView: View {
                         .clipShape(.rect(cornerRadius: 30))
                         .shadow(radius: 6, x: 5, y: 5)
                     
-                    Text("Wordy v1.0")
+                    Text("Wordy \(version ?? "")")
                         .font(.custom("Arial Black", size: 16))
                         .foregroundStyle(.gray)
                     

@@ -31,7 +31,6 @@ struct AcceptButtonView: View {
                     //path.append(testViewModel.currentType)
                     wordInput = ""
                 } else {
-                    print("MY LOG: До метода: ", word.translation)
                     testViewModel.freeInputWordCheck(word: wordInput)
                     if testViewModel.isRightWord {
                         audioPlayer.makeSound(name: "success", withExtensions: "wav")
@@ -40,7 +39,6 @@ struct AcceptButtonView: View {
                         Haptic.notify(.error)
                         audioPlayer.makeSound(name: "wrong", withExtensions: "mp3")
                     }
-                    print("MY LOG: после: ", word.translation)
                     isFocused = false
                 }
             } label: {

@@ -20,12 +20,10 @@ class AudioPlayer {
     
     func makeSound(name: String,withExtensions: String) {
         guard isEnable else {
-            print("MY LOG: sound is disabled in settings")
             return
         }
         
         guard let sound = Bundle.main.url(forResource: name, withExtension: withExtensions) else {
-            print("error with soudn launchScreen")
             return
         }
         
@@ -33,7 +31,6 @@ class AudioPlayer {
             audioPlayer = try AVAudioPlayer(contentsOf: sound)
             audioPlayer?.play()
         } catch {
-            print("Erorr with playing sound")
         }
     }
     

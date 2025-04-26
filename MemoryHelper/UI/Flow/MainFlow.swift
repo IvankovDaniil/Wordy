@@ -131,9 +131,7 @@ private struct TabBarButtons: View {
     }
 }
 
-
-
-struct BlurView: UIViewRepresentable {
+private struct BlurView: UIViewRepresentable {
     var style: UIBlurEffect.Style
     
     func makeUIView(context: Context) -> UIVisualEffectView {

@@ -47,7 +47,6 @@ final class WordViewModel: WordsManaging {
     func preloadWords() {
         
         guard let url = Bundle.main.url(forResource: "words", withExtension: "json") else {
-            print("error json read")
             return
         }
         
@@ -99,7 +98,6 @@ final class WordViewModel: WordsManaging {
             try modelContext.save()
             fetchWords()
         } catch {
-            print("Error with adding words")
         }
     }
     
@@ -124,7 +122,7 @@ final class WordViewModel: WordsManaging {
             try modelContext.save()
             fetchWords()
         } catch {
-            print("Error with deleting words")
+            
         }
     }
     
@@ -140,7 +138,7 @@ final class WordViewModel: WordsManaging {
             try modelContext.save()
             fetchWords()
         } catch {
-            print("Error with update word")
+            
         }
         
     }
